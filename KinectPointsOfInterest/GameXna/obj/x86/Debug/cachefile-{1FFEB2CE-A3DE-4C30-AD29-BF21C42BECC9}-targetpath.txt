@@ -1,0 +1,2 @@
+XnaGameContent\Sprite.xnb
+XnaGameContent\whiteLine.xnb
