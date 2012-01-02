@@ -17,7 +17,16 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\whiteLine.xnb</Output>
-      <Time>2011-12-30T13:57:28.5690819+00:00</Time>
+      <Time>2012-01-02T17:47:11.7475098+00:00</Time>
+    </Item>
+    <Item>
+      <Source>click_1.mp3</Source>
+      <Name>click_1</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\click_1.xnb</Output>
+      <Time>2012-01-02T17:15:15.4509141+00:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -25,10 +34,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\</RootDirectory>
-      <LoggerRootDirectory>c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\</LoggerRootDirectory>
-      <IntermediateDirectory>c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\</OutputDirectory>
+      <RootDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

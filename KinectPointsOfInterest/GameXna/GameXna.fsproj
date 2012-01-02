@@ -65,6 +65,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Body.fs" />
     <Compile Include="BodyMeasurements.fs" />
     <Compile Include="Game.fs" />
   </ItemGroup>

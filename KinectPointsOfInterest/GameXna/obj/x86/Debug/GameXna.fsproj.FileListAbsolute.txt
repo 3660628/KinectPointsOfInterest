@@ -9,3 +9,4 @@ c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\Kinec
 c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\whiteLine.xnb
 c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\KinectHelperMethods.dll
 c:\users\ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\KinectHelperMethods.pdb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\click_1.xnb
