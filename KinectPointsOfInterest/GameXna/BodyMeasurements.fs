@@ -9,9 +9,9 @@ open System
     // Methods to measure the body from 3 views, front side and back
     //
     // parameters:
-    //      game:GameXna - the XnaGame object that is using this class
+    //      game:Game - the Game object that is using this class
     //      frontBody:Body - the front body view with joints and depth data
-    //      leftSideBody:Body - the side body view with joints and depth data
+    //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
     type BodyMeasurements(game, frontBody:Body, leftSideBody:Body, backBody:Body)=
@@ -37,7 +37,28 @@ open System
         let game = game
         let mutable spriteBatch = null
 
-        //new(game) = new BodyMeasurements(game, new Body(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 0.0f)))
+        //pixel resolution formula, obtained empirically
+        let horizontalPixelResolution depth =
+            374.0 / 80096.0 * Math.Pow(depth, -1.0)
+        
+        let measureSurfaceDistance (points:int[]) =
+            let mutable measurement = 0.0
+            let mutable pixelWidth=0.0
+            let mutable lastPixelDepth =0
+            let mutable i=0
+            while lastPixelDepth = 0 && i<points.Length-1 do
+                lastPixelDepth <- points.[i]
+                i<-i+1
+            while i < points.Length-1 do
+                pixelWidth <- 374.0 / (80096.0 * Math.Pow(float(points.[i]), -0.953))
+                if points.[i] >0 then
+                    let currentPixelDepthChange = Math.Sqrt(Math.Pow(float(points.[i] - lastPixelDepth),2.0))
+                    //By pythagoras
+                    let diagonalWH = Math.Sqrt(Math.Pow(currentPixelDepthChange,2.0) + Math.Pow(pixelWidth, 2.0))
+                    measurement <- measurement + diagonalWH
+                    lastPixelDepth <- points.[i]
+                i<-i+1
+            measurement
 
         //These members find the top and bottom most points of the depth image
         //The values they return are based on the 2D visualisation space i.e. in the range x=0-240, y=0-320
@@ -87,7 +108,24 @@ open System
             //BOF
 
         member this.GetHips =
+            let kneeL = backBody.GetJoint("leftKnee")
+            let depthImage = backBody.DepthImg
+            let mutable h = 0
+            let mutable hipWidth = 0.0
+            
+            let mutable y = int (backBody.GetJoint("centerHip").Y) //start at hip bone as hips are below this
+            while y < (int kneeL.Y) do //finish at knee as hips are above knee
+                let pointsOnLine =  depthImage.[(y * 240)..((y * 240)+320)]
+                let currentFoundWidth = measureSurfaceDistance pointsOnLine
+                if currentFoundWidth > hipWidth then
+                    hipWidth <- currentFoundWidth
+                    h <- y
+                y <- y + 1
+            hips <-  float32 h
+
+        member this.GetHipsOld =
             let kneeL = leftSideBody.GetJoint("leftKnee")
+            let footL = leftSideBody.GetJoint("leftFoot")
             let depthImage = leftSideBody.DepthImg
             let mutable h = 0
             let mutable hipWidth = 0
@@ -95,7 +133,7 @@ open System
             while y < (int kneeL.Y) do //finish at knee as hips are below knee
                 let mutable x = 0
                 let mutable currentFoundWidth = 0
-                while x < 319 do
+                while x < int footL.X do
                     let arrayPosition = (y * 320 + x)  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
@@ -153,7 +191,7 @@ open System
                 this.MeasureToWaistVis
                 this.MeasureToShoulders
                 this.MeasureToKnees
-                this.GetHips
+                this.GetHipsOld
                 frontBodyView <- this.ConvertDepthToTexture frontBody
                 sideBodyView <- this.ConvertDepthToTexture leftSideBody
                 pointsFound <- true
@@ -182,9 +220,9 @@ open System
             spriteBatch.Begin()
             //Draw the points of interest lines
             if frontBodyView <> null then
-                spriteBatch.Draw(frontBodyView, new Vector2(320.0f, 0.0f), Color.White)//Waist
+                spriteBatch.Draw(frontBodyView, new Vector2(320.0f, 0.0f), Color.White)//front view
             if sideBodyView <> null then
-                spriteBatch.Draw(sideBodyView, new Vector2(640.0f, 0.0f), Color.White)//Waist
+                spriteBatch.Draw(sideBodyView, new Vector2(640.0f, 0.0f), Color.White)//left side view
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, waist), Color.White)//Waist
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, topOfHead), Color.White)//Top of Head
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, bottomOfFeet), Color.White)//Bottom of feet

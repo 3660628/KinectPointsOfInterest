@@ -45,7 +45,7 @@
                 graphicsDeviceManager.PreferredBackBufferHeight <- screenHeight
                 graphicsDeviceManager.ApplyChanges() 
                 spriteBatch <- new SpriteBatch(game.GraphicsDevice)
-                kinect.Initialize()
+                game.Components.Add(kinect)
                 base.Initialize()
 
             override game.LoadContent() =
@@ -74,79 +74,65 @@
 
             override game.Draw gameTime = 
                 game.GraphicsDevice.Clear(Color.CornflowerBlue)
-                spriteBatch.Begin()
-
-                //Draw the depth map display
-                if not(depthImage = null) then spriteBatch.Draw(depthImage, new Rectangle(0, 0, screenWidth/3, screenHeight/2), Color.White)
-                spriteBatch.End()
+                
                 base.Draw gameTime
 
-            member game.SetDepthImage dI=
-                depthImage <- dI
 
-        and Kinect(game:XnaGame)=
+        and Kinect(game:Game)=
+            inherit DrawableGameComponent(game)
 
             let nui = Runtime.Kinects.[0]//kinect natural user interface object
             let game = game
             let body = new BodyData.Body()
 
-            let mutable lastSkeletonArgs = null
-            let mutable lastDepthArgs = null
-
             let maxDist = 4000
             let minDist = 850
             let distOffset = maxDist - minDist
 
-            //*****************SKELETON EVENT HANDLER************************************
-            //Manipulates and processes the skeleton data once it has been recieved 
-            //from the sensor
-            //***************************************************************************
-            let SkeletonReady (sender : obj) (args: SkeletonFrameReadyEventArgs)=
-                lastSkeletonArgs <- args
-            //***************************************************************************
+            let mutable liveDepthView:Texture2D = null
+            let mutable spriteBatch = null
 
-            
-            //*****************DEPTHFRAME EVENT HANDLER**********************************
-            //Manipulates and processes the depth data once it has been recieved from 
-            //the sensor
-            //***************************************************************************
-            let DepthReady (sender : obj) (args:ImageFrameReadyEventArgs)=      
-                lastDepthArgs <- args
-                
-                let pImg = args.ImageFrame.Image
-                let img = new Texture2D(game.GraphicsDevice, pImg.Width, pImg.Height)
-                let DepthColor = Array.create (pImg.Width*pImg.Height) (new Color(255,255,255))
-
-                let distancesArray = Array.create (320*240) 0
-
-                for y = 0 to pImg.Height-1 do
-                    for x = 0 to pImg.Width-1 do
-                        let n = (y * pImg.Width + x) * 2
-                        let distance = (int pImg.Bits.[n + 0] >>>3) ||| (int pImg.Bits.[n + 1] <<< 5) //put together bit data as depth
-                        let pI = int (pImg.Bits.[n] &&& 7uy) // gets the player index
-                        //change distance to colour
-                        let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
-                        let colour = new Color(intensity, intensity, intensity)
-                        DepthColor.[y * pImg.Width + x] <- colour
-                img.SetData(DepthColor)
-                game.SetDepthImage img
-
-            //****************************************************************************   
-            
-            member this.Initialize ()=
+            override this.Initialize ()=
                 try 
                     do nui.Initialize(RuntimeOptions.UseSkeletalTracking ||| RuntimeOptions.UseDepthAndPlayerIndex)
-                    //do nui.SkeletonEngine.TransformSmooth <- true;
-                    do nui.SkeletonFrameReady.AddHandler(new EventHandler<SkeletonFrameReadyEventArgs>(SkeletonReady))
                     do nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex)
-                    do nui.DepthFrameReady.AddHandler(new EventHandler<ImageFrameReadyEventArgs>(DepthReady))
-                    
                 with
                     | :? System.InvalidOperationException -> System.Diagnostics.Debug.Write("Kinect not connected!")
+                spriteBatch <- new SpriteBatch(game.GraphicsDevice)
+            
+            override this.LoadContent()=
+                liveDepthView <- new Texture2D(game.GraphicsDevice, 320, 240)
+            
+            override this.Update gameTime=
+                let args = nui.DepthStream.GetNextFrame 0
+
+                if args <> null then
+                    let pImg = args.Image
+                    let img = new Texture2D(game.GraphicsDevice, pImg.Width, pImg.Height)
+                    let DepthColor = Array.create (pImg.Width*pImg.Height) (new Color(255,255,255))
+
+                    for y = 0 to pImg.Height-1 do
+                        for x = 0 to pImg.Width-1 do
+                            let n = (y * pImg.Width + x) * 2
+                            let distance = (int pImg.Bits.[n + 0] >>>3) ||| (int pImg.Bits.[n + 1] <<< 5) //put together bit data as depth
+                            let pI = int (pImg.Bits.[n] &&& 7uy) // gets the player index
+                            //change distance to colour
+                            let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
+                            let colour = new Color(intensity, intensity, intensity)
+                            DepthColor.[y * pImg.Width + x] <- colour
+                    img.SetData(DepthColor)
+                    liveDepthView <- img
+
+            override this.Draw gameTime=
+                spriteBatch.Begin()
+                if liveDepthView <> null then 
+                    spriteBatch.Draw(liveDepthView, new Vector2(0.0f, 0.0f), Color.White)
+                spriteBatch.End()
                             
             member this.CaptureBody =
                 let body = new BodyData.Body()
-                for skeleton in lastSkeletonArgs.SkeletonFrame.Skeletons do
+                let skeletonFrame = nui.SkeletonEngine.GetNextFrame 100
+                for skeleton in skeletonFrame.Skeletons do
                     if skeleton.TrackingState.Equals(SkeletonTrackingState.Tracked) then
                         let depthWidth, depthHeight = 320, 240
                         let leftShoulderJ = skeleton.Joints.[JointID.ShoulderLeft]
@@ -174,7 +160,8 @@
                         
                         body.SetSkeleton(head, leftShoulder, rightShoulder, centerShoulder, leftHip, rightHip, centerHip, leftFoot,rightFoot, leftKnee, rightKnee)
 
-                let pImg = lastDepthArgs.ImageFrame.Image
+                let depthFrame = nui.DepthStream.GetNextFrame 100
+                let pImg = depthFrame.Image
 
                 let distancesArray = Array.create (320*240) 0
 
