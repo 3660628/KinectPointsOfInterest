@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="KinectPointsOfInterest">
+</Property><Property Name="Solution File" Value="C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest.sln">
+</Property><Property Name="Date" Value="05 January 2012">
+</Property><Property Name="Time" Value="12:12:32">
+</Property></Properties><Event ErrorLevel="0" Project="Accord.Imaging" Source="KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Accord.Imaging" Source="KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Accord.Imaging" Source="KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Accord.Imaging" Source="KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj" Description="Created rule set file &quot;C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\Migrated rules for Accord.Imaging.ruleset&quot; for the &quot;Debug (Any CPU)&quot; configuration.">
+</Event><Event ErrorLevel="0" Project="Accord.Imaging" Source="KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj" Description="Created rule set file &quot;C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\Migrated rules for Accord.Imaging (2).ruleset&quot; for the &quot;Release (Any CPU)&quot; configuration.">
+</Event></UpgradeLog>

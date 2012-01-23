@@ -1,0 +1,8 @@
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\bin\Debug\Accord.Imaging.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\bin\Debug\Accord.Imaging.pdb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\bin\Debug\AForge.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\bin\Debug\AForge.Imaging.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\bin\Debug\AForge.Math.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\obj\Debug\Accord.Imaging.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\Accord.Imaging\obj\Debug\Accord.Imaging.pdb

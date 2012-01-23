@@ -4,6 +4,9 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
 open System
+open System.IO
+
+open AForge.Imaging
     
     //*************************************************************
     // Methods to measure the body from 3 views, front side and back
@@ -14,7 +17,7 @@ open System
     //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
-    type BodyMeasurements(game, frontBody:Body, leftSideBody:Body, backBody:Body)=
+    type BodyMeasurements(game, kinect:KinectPointsOfInterest.Kinect, frontBody:Body, leftSideBody:Body, backBody:Body)=
         inherit DrawableGameComponent(game)
         
         let phi = 1.61803399 //golden ratio
@@ -30,9 +33,26 @@ open System
 
         let mutable pointsFound = false
 
+        //measurements
+        let mutable waistMeasurement = 0.0
+        
+        //diagnostics
+        let mutable frontMeasurement = 0.0
+        let mutable flatFront = 0
+        let mutable waistMax = 0.0
+        let mutable waistMin = Double.MaxValue
+        let waistContour:int[] = Array.zeroCreate 320
+        let fn:string = "frontWaist.cvs"
+        let strm = new StreamWriter( fn,  false)
+        let mutable measurementCount = 0
+       
+        
+
         let mutable pointOfInterestLine:Texture2D = null
         let mutable frontBodyView:Texture2D = null
         let mutable sideBodyView:Texture2D = null
+        let mutable dot:Texture2D = null
+        let mutable measurementFont:SpriteFont =null
         
         let game = game
         let mutable spriteBatch = null
@@ -42,6 +62,7 @@ open System
             374.0 / 80096.0 * Math.Pow(depth, -1.0)
         
         let measureSurfaceDistance (points:int[]) =
+            
             let mutable measurement = 0.0
             let mutable pixelWidth=0.0
             let mutable lastPixelDepth =0
@@ -107,7 +128,7 @@ open System
             bottomOfFeet <- BOF.Y
             //BOF
 
-        member this.GetHips =
+        member this.GetHipsOld =
             let kneeL = backBody.GetJoint("leftKnee")
             let depthImage = backBody.DepthImg
             let mutable h = 0
@@ -123,7 +144,7 @@ open System
                 y <- y + 1
             hips <-  float32 h
 
-        member this.GetHipsOld =
+        member this.GetHips =
             let kneeL = leftSideBody.GetJoint("leftKnee")
             let footL = leftSideBody.GetJoint("leftFoot")
             let depthImage = leftSideBody.DepthImg
@@ -145,6 +166,35 @@ open System
                 y <- y + 1
             hips <-  float32 h
 
+        member this.GetChest =
+            let shoulderC = frontBody.GetJoint("centerShoulder").Y
+            let depthImage = frontBody.DepthImg
+            let mutable lastWidth = 0
+            let mutable y = (int shoulderC)
+            while y <  240 do //finish at knee as hips are below knee
+                    let mutable x = 0
+                    let mutable currentFoundWidth = 0
+                    while x < 320 do
+                        let arrayPosition = (y * 320 + x)  
+                        let depth = depthImage.[arrayPosition]
+                        if depth > 0 then
+                            currentFoundWidth <- currentFoundWidth + 1
+                        x <- x + 1
+                    //if currentFoundWidth > hipWidth then
+                        //hipWidth <- currentFoundWidth
+                        //h <- y
+                    y <- y + 1
+                ///hips <-  float32 h
+
+        member this.GetWaist=
+            let w = -((bottomOfFeet - topOfHead) / float32 phi) + topOfHead + (bottomOfFeet - topOfHead)
+            waist <- w
+
+        member this.GetShoulders=
+            shoulders <- frontBody.GetJoint("centerShoulder").Y
+
+
+
         //*******************************
         //Measurement members. Used to find points at which measurements should be taken
         //*******************************
@@ -158,12 +208,15 @@ open System
             bottomOfFeet * 5.0f - topOfHead * 5.0f 
         
         //Ceiling to waist measurement
-        member this.MeasureToWaistVis=
-            let w = -(height / float32 phi) + topOfHead + height
-            waist <- w
+        
 
-        member this.MeasureToWaistWorld=
-            this.MeasureHeightWorld / float32 phi
+        member this.MeasureWaist=
+            let waistStart = int waist * 360
+            let waistEnd = waistStart + 320
+            let frontRow = frontBody.DepthImg.[waistStart..waistEnd]
+            let backRow = backBody.DepthImg.[waistStart..waistEnd]
+            waistMeasurement <- measureSurfaceDistance frontRow
+            waistMeasurement <- waistMeasurement + (measureSurfaceDistance backRow)
 
         //top of screen to shoulders
         member this.MeasureToShoulders=
@@ -179,22 +232,50 @@ open System
         override this.Initialize()=
             spriteBatch <- new SpriteBatch(game.GraphicsDevice)
             pointOfInterestLine <- game.Content.Load<Texture2D>("whiteLine")
+            dot <- game.Content.Load<Texture2D>("dot")
+            measurementFont <- game.Content.Load<SpriteFont>("Font")
 
-        override this.LoadContent()=
-            pointOfInterestLine <- game.Content.Load<Texture2D>("whiteLine")
 
+        
         override this.Update(gameTime)=
             if frontBody.CompleteBody && leftSideBody.CompleteBody && not pointsFound then
                 this.GetTopOfHead
                 this.GetBottomOfFeet
-                this.MeasureHeightVis
-                this.MeasureToWaistVis
+                this.GetWaist
                 this.MeasureToShoulders
                 this.MeasureToKnees
-                this.GetHipsOld
+                this.GetHips
                 frontBodyView <- this.ConvertDepthToTexture frontBody
                 sideBodyView <- this.ConvertDepthToTexture leftSideBody
+                this.MeasureWaist
                 pointsFound <- true
+            if waist > 0.0f && pointsFound then
+                let waistRow = kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+                let flatFrontArray = Array.map (fun a ->
+                                                match a with
+                                                | 0 -> None
+                                                | _ -> Some a) waistRow
+                
+                flatFront <- flatFrontArray.Length
+                frontMeasurement <- measureSurfaceDistance waistRow
+                try
+                    strm.Write (frontMeasurement.ToString() + "\r\n")
+                with 
+                    | :? System.ObjectDisposedException -> System.Diagnostics.Debug.Write("finished")
+                measurementCount <- measurementCount + 1
+                
+                if measurementCount = 1000 then
+                    strm.Close()
+
+                if frontMeasurement > waistMax then
+                    waistMax <- frontMeasurement
+                if frontMeasurement < waistMin then
+                    waistMin <- frontMeasurement
+                
+                if waistRow.Length > 0 then
+                    let range = Array.max waistRow - Array.min(Array.filter (fun elem -> if elem = 0 then false else true) waistRow)
+                    for i = 0 to 319 do  
+                        waistContour.[i] <- waistRow.[i] - (Array.max waistRow - range)
 
         member this.ConvertDepthToTexture (b:Body)=
             let img = new Texture2D(game.GraphicsDevice, 320, 240)
@@ -229,5 +310,18 @@ open System
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, shoulders), Color.White)//Shoulders
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, hips), Color.White)//Hips
             spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, knees), Color.White)//Knees
+
+            spriteBatch.DrawString(measurementFont, "Waist:"+waistMeasurement.ToString(), new Vector2(0.0f, 320.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "Front@Waist:"+frontMeasurement.ToString(), new Vector2(0.0f, 340.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "Front@Waist(Flat):"+flatFront.ToString(), new Vector2(0.0f, 360.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "MaxFront@Waist:"+waistMax.ToString(), new Vector2(0.0f, 380.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "MinFront@Waist:"+waistMin.ToString(), new Vector2(0.0f, 400.0f), Color.White);
+
+            let visOffset = new Vector2(400.0f, 240.0f)
+            for i = 0 to 319 do
+                let point = waistContour.[i]
+                if point > 0 then
+                     spriteBatch.Draw(dot, visOffset+ new Vector2(float32 i, float32 point), Color.White)//Knees
+
             spriteBatch.End()
         

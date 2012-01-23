@@ -41,6 +41,12 @@
     <DocumentationFile>bin\Release\GameXna.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AForge">
+      <HintPath>..\Externals\AForge.NET\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>..\Externals\AForge.NET\AForge.Imaging.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Research.Kinect, Version=1.0.0.45, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
@@ -66,8 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Body.fs" />
-    <Compile Include="BodyMeasurements.fs" />
     <Compile Include="Kinect.fs" />
+    <Compile Include="BodyMeasurements.fs" />
     <Compile Include="Game.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

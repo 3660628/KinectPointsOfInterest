@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaGameContent", "KinectPoi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectHelperMethods", "KinectPointsOfInterest\KinectHelperMethods\KinectHelperMethods.csproj", "{BBED4607-252B-4FF9-864F-292EB3F6DE53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accord.Imaging", "KinectPointsOfInterest\Accord.Imaging\Accord.Imaging.csproj", "{4959A83D-F78F-439E-80A5-41583ECEAAC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,16 @@ Global
 		{BBED4607-252B-4FF9-864F-292EB3F6DE53}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BBED4607-252B-4FF9-864F-292EB3F6DE53}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BBED4607-252B-4FF9-864F-292EB3F6DE53}.Release|x86.ActiveCfg = Release|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4959A83D-F78F-439E-80A5-41583ECEAAC6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

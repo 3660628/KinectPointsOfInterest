@@ -68,7 +68,7 @@
                     frontBody <- kinect.CaptureBody
                     
                 if frontBody <> null && backBody <> null && sideBody <> null && not finished then
-                    game.Components.Add(new BodyMeasurements(this, frontBody, sideBody, backBody))
+                    game.Components.Add(new BodyMeasurements(this, kinect, frontBody, sideBody, backBody))
                     finished <- true
                 base.Update gameTime
 

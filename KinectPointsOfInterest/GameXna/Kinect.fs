@@ -3,6 +3,8 @@
     open Microsoft.Xna.Framework.Graphics
     open Microsoft.Research.Kinect.Nui
 
+    
+
     open KinectHelperMethods
 
     open System
@@ -17,6 +19,8 @@
         let maxDist = 4000
         let minDist = 850
         let distOffset = maxDist - minDist
+
+        let mutable liveDepthData:int[]=Array.zeroCreate (320 * 240)
 
         let mutable liveDepthView:Texture2D = null
         let mutable spriteBatch = null
@@ -45,6 +49,7 @@
                         let n = (y * pImg.Width + x) * 2
                         let distance = (int pImg.Bits.[n + 0] >>>3) ||| (int pImg.Bits.[n + 1] <<< 5) //put together bit data as depth
                         let pI = int (pImg.Bits.[n] &&& 7uy) // gets the player index
+                        liveDepthData.[y * pImg.Width + x] <- if pI > 0 then distance else 0
                         //change distance to colour
                         let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
                         let colour = new Color(intensity, intensity, intensity)
@@ -57,6 +62,9 @@
             if liveDepthView <> null then 
                 spriteBatch.Draw(liveDepthView, new Vector2(0.0f, 0.0f), Color.White)
             spriteBatch.End()
+         
+        member this.LiveDepthData
+            with get() = liveDepthData   
                             
         member this.CaptureBody =
             let body = new BodyData.Body()
