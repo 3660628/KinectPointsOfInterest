@@ -57,6 +57,9 @@
             | "rightKnee" -> kneeR:Vector3
             | _ -> raise (InvalidJointNameException("Cannot recognise joint '" + jointName + "'")) 
 
+        member this.GetSkeleton=
+            (head, shoulderL, shoulderR, shoulderC, hipL, hipR, hipC, footL, footR, kneeL, kneeR) 
+
         member this.CompleteBody =  //complete body if has joints and depth data
             if Array.max(depthImage) > 0 then
                 if not(head.Equals(new Vector3(0.0f,0.0f,0.0f))) then

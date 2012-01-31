@@ -27,7 +27,9 @@
     
             let mutable timer = 10000.0f
             let mutable finished = false
-            let mutable frontBody, backBody, sideBody = null, null, null
+            let mutable frontBody:Body[] = Array.zeroCreate 100
+            let mutable backBody:Body[] = Array.zeroCreate 100
+            let mutable sideBody:Body[] = Array.zeroCreate 100
 
             //vertical points of interest. all dimensions are in visualisation space
             let mutable topOfHeadY = 0.0f
@@ -38,6 +40,7 @@
             //depth image map
             let mutable depthImage:Texture2D = null
             let mutable clickSound:SoundEffect = null
+            let mutable beepSound:SoundEffect = null
 
             override game.Initialize() =
                 graphicsDeviceManager.GraphicsProfile <- GraphicsProfile.HiDef
@@ -51,23 +54,30 @@
             override game.LoadContent() =
                 sprite <- game.Content.Load<Texture2D>("Sprite")
                 clickSound <- game.Content.Load<SoundEffect>("click_1")
+                beepSound <- game.Content.Load<SoundEffect>("BEEP1A")
                 base.LoadContent()
         
             override game.Update gameTime = 
 
                 timer <- timer - float32 gameTime.ElapsedGameTime.TotalMilliseconds
 
-                if timer <= -10000.0f && backBody = null then
+                if timer <= -10000.0f && backBody.[0] = null then
                     clickSound.Play() |> ignore
-                    backBody <- kinect.CaptureBody
-                else if timer <= -5000.0f && sideBody = null then
+                    for i = 0 to 99 do
+                        backBody.[i] <- kinect.CaptureBody
+                    beepSound.Play() |> ignore
+                else if timer <= -5000.0f && sideBody.[0] = null then
                     clickSound.Play() |> ignore
-                    sideBody <- kinect.CaptureBody
-                else if timer <= 0.0f && frontBody = null then
+                    for i = 0 to 99 do
+                        sideBody.[i] <- kinect.CaptureBody
+                    beepSound.Play() |> ignore
+                else if timer <= 0.0f && frontBody.[0] = null then
                     clickSound.Play() |> ignore
-                    frontBody <- kinect.CaptureBody
+                    for i = 0 to 99 do
+                        frontBody.[i] <- kinect.CaptureBody
+                    beepSound.Play() |> ignore
                     
-                if frontBody <> null && backBody <> null && sideBody <> null && not finished then
+                if frontBody.[99] <> null && backBody.[99] <> null && sideBody.[99] <> null && not finished then
                     game.Components.Add(new BodyMeasurements(this, kinect, frontBody, sideBody, backBody))
                     finished <- true
                 base.Update gameTime
