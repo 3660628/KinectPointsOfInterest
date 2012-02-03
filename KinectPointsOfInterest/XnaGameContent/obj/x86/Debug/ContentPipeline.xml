@@ -46,6 +46,60 @@
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\Font.xnb</Output>
       <Time>2012-01-04T15:49:42.0943864+00:00</Time>
     </Item>
+    <Item>
+      <Source>BEEP1A.WAV</Source>
+      <Name>BEEP1A</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BEEP1A.xnb</Output>
+      <Time>2012-01-31T18:01:00.107773+00:00</Time>
+    </Item>
+    <Item>
+      <Source>shopButton.png</Source>
+      <Name>shopButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\shopButton.xnb</Output>
+      <Time>2012-02-01T14:11:36.5757331+00:00</Time>
+    </Item>
+    <Item>
+      <Source>measurementsButton.png</Source>
+      <Name>measureButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\measureButton.xnb</Output>
+      <Time>2012-02-01T14:11:36.574733+00:00</Time>
+    </Item>
+    <Item>
+      <Source>cursor.png</Source>
+      <Name>cursor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\cursor.xnb</Output>
+      <Time>2012-02-01T17:30:24.1516423+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textbox.png</Source>
+      <Name>textbox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox.xnb</Output>
+      <Time>2012-02-03T10:58:11.6754436+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textBoxFont.spritefont</Source>
+      <Name>textBoxFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
+      <Time>2012-02-03T11:18:22.9677255+00:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>
