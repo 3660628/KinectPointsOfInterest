@@ -78,8 +78,8 @@
     <Compile Include="Kinect.fs" />
     <Compile Include="BodyMeasurements.fs" />
     <Compile Include="MenuItems.fs" />
+    <Compile Include="Store.fs" />
     <Compile Include="Screens.fs" />
-    <Compile Include="DatabaseAccess.fs" />
     <Compile Include="Game.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />

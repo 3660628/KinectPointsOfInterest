@@ -9,4 +9,11 @@ XnaGameContent\measureButton.xnb
 XnaGameContent\cursor.xnb
 XnaGameContent\textbox.xnb
 XnaGameContent\textBoxFont.xnb
+XnaGameContent\nextButton.xnb
+XnaGameContent\femaleButton.xnb
+XnaGameContent\maleButton.xnb
+XnaGameContent\male.xnb
+XnaGameContent\texture_0.xnb
+XnaGameContent\garment_bg.xnb
+XnaGameContent\garmentItemFont.xnb
 XnaGameContent\measurementsButton.png

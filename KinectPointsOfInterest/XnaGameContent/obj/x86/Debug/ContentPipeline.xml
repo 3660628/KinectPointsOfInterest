@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline" xmlns:Framework="Microsoft.Xna.Framework" xmlns:Processors="Microsoft.Xna.Framework.Content.Pipeline.Processors">
   <Asset Type="Pipeline:BuildItemCollection">
     <Item>
       <Source>Sprite.png</Source>
@@ -99,6 +99,88 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
       <Time>2012-02-03T11:18:22.9677255+00:00</Time>
+    </Item>
+    <Item>
+      <Source>nextButton.png</Source>
+      <Name>nextButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\nextButton.xnb</Output>
+      <Time>2012-02-05T19:37:51.8393907+00:00</Time>
+    </Item>
+    <Item>
+      <Source>femaleButton.png</Source>
+      <Name>femaleButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\femaleButton.xnb</Output>
+      <Time>2012-02-06T10:41:48.3644341+00:00</Time>
+    </Item>
+    <Item>
+      <Source>maleButton.png</Source>
+      <Name>maleButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\maleButton.xnb</Output>
+      <Time>2012-02-06T10:41:48.3656841+00:00</Time>
+    </Item>
+    <Item>
+      <Source>male.FBX</Source>
+      <Name>male</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\male.xnb</Output>
+      <Time>2012-02-06T11:38:24.2968117+00:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\male_0.xml</Key>
+        <Value>2012-02-06T11:38:29.7651244+00:00</Value>
+      </Dependency>
+      <Request>C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_0.xnb</Request>
+    </Item>
+    <Item>
+      <Source>male.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\male_0.xml</Output>
+      <Time>2012-02-06T11:38:24.2968117+00:00</Time>
+    </Item>
+    <Item>
+      <Source>texture.png</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">false</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_0.xnb</Output>
+      <Time>2012-02-06T11:38:24.3008119+00:00</Time>
+    </Item>
+    <Item>
+      <Source>garment_bg.png</Source>
+      <Name>garment_bg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garment_bg.xnb</Output>
+      <Time>2012-02-10T16:38:10.8643247+00:00</Time>
+    </Item>
+    <Item>
+      <Source>garmentItemFont.spritefont</Source>
+      <Name>garmentItemFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb</Output>
+      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

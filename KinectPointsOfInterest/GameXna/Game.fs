@@ -25,7 +25,7 @@
 
             let changeScreenEvent = new Event<ChangeScreenEventArgs>()
 
-            let login = new LoginScreen(this, changeScreenEvent)
+            let login = new StoreScreen(this, changeScreenEvent)
 
             let loadNewScreen (args:ChangeScreenEventArgs)= 
                 args.OldScreen.DestroyScene()
