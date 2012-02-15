@@ -25,6 +25,13 @@ C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\Kinec
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\femaleButton.xnb
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\maleButton.xnb
 C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\male.xnb
-C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_0.xnb
-C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garment_bg.xnb
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\backButton.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox_shaddow.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentButton.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentThumbNotFound.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentThumbLoading.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentImageLoading.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentImageNotFound.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\malechub.xnb

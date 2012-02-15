@@ -42,7 +42,8 @@
                     false
 
             abstract member DestroyScene: unit -> unit
-            default this.DestroyScene() = ()
+            default this.DestroyScene() = 
+                this.Game.Components.Remove(cursor) |> ignore
 
         and MeasurementScreen(game:Game, sex, e:Event<ChangeScreenEventArgs>)=
             inherit Menu(game)
@@ -67,7 +68,7 @@
             let mutable clickSound:SoundEffect = null
             let mutable beepSound:SoundEffect = null
 
-            let mutable nextButton = new Button(game, "nextButton", new Vector2( 300.0f, 300.0f))
+            let mutable nextButton = new TextButton(game, "nextButton", "no_shadow", "Next", new Vector2( 300.0f, 300.0f))
 
             member this.ClickOption(mouseClickPos:Vector2)=
                 match mouseClickPos with
@@ -120,13 +121,14 @@
             override this.DestroyScene()=
                 this.Game.Components.Remove(kinect) |> ignore
                 this.Game.Components.Remove(nextButton) |> ignore
+                base.DestroyScene()
 
         and VisualisationScreen(game:Game, sex, height, chest, waist, hips, e:Event<ChangeScreenEventArgs>)=
             inherit Menu(game)
 
             let event = e
 
-            let mutable nextButton = new Button(game, "nextButton", new Vector2( 300.0f, 300.0f))
+            let mutable nextButton = new TextButton(game, "nextButton", "no_shadow", "Next", new Vector2( 300.0f, 500.0f))
 
             let model = new PersonModel(game, sex, height, chest, waist, hips)
             
@@ -134,7 +136,7 @@
 
             override this.Initialize()=
                 this.Game.Components.Add(model)
-                this.Game.Components.Add(nextButton)
+                //this.Game.Components.Add(nextButton)
                 base.Initialize()
 
             override this.LoadContent()=
@@ -155,22 +157,23 @@
 
             override this.DestroyScene()=
                 this.Game.Components.Remove(model) |> ignore
-                this.Game.Components.Remove(nextButton) |> ignore
+                //this.Game.Components.Remove(nextButton) |> ignore
+                base.DestroyScene()
 
-        and MainMenu(game:Game, e:Event<ChangeScreenEventArgs>)=
+        and MainMenu(game:Game, e:Event<ChangeScreenEventArgs>) as this=
             inherit Menu(game)
 
-            let mutable measureButton = null
-            let mutable shopButton = null
+            let mutable measureButton = new Button(game, "measureButton", "no_shadow", new Vector2(0.0f,0.0f))
+            let mutable shopButton = new Button(game, "shopButton", "no_shadow", new Vector2(400.0f,0.0f))
             let event = e
             
-            let mutable leftClick = true //so click form last screen is not read through
+            let measureButtonHandler args= event.Trigger(new ChangeScreenEventArgs(this, new GenderSelectScreen(this.Game, event)))
 
+            let shopButtonHandler args= event.Trigger(new ChangeScreenEventArgs(this, new StoreScreen(this.Game, event)))
+            
             override this.Initialize()=
-                measureButton <- new Button(game, "measureButton", new Vector2(0.0f,0.0f))
-                shopButton <- new Button(game, "shopButton", new Vector2(400.0f,0.0f))
-                measureButton.DrawOrder = 1 |> ignore
-                shopButton.DrawOrder = 1 |> ignore
+                measureButton.Click.Add(fun args -> measureButtonHandler args)
+                shopButton.Click.Add(fun args -> shopButtonHandler args)
                 this.Game.Components.Add(measureButton)
                 this.Game.Components.Add(shopButton)
                 base.Initialize()
@@ -178,88 +181,77 @@
             override this.LoadContent()=
                 base.LoadContent()
 
-            override this.Update(gameTime)=
-                if Mouse.GetState().LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    this.ClickOption (new Vector2(float32(Mouse.GetState().X), float32( Mouse.GetState().Y)))
-                if Mouse.GetState().LeftButton = ButtonState.Released then
-                    leftClick <- false
-                base.Update(gameTime)
-
-            member this.ClickOption(mouseClickPos:Vector2)=
-                match mouseClickPos with
-                    | x when base.InBounds(x, measureButton) -> event.Trigger(new ChangeScreenEventArgs(this, new GenderSelectScreen(this.Game, event))) //clicked on measure button
-                    | x when base.InBounds(x, shopButton) -> event.Trigger(new ChangeScreenEventArgs(this, new LoginScreen(this.Game, event))) //clicked on shop button
-                    | _ -> ()// clicked elsewhere, do nothing
-
             override this.DestroyScene()=
                 this.Game.Components.Remove(measureButton) |> ignore
                 this.Game.Components.Remove(shopButton) |> ignore
+                base.DestroyScene()
 
-        and LoginScreen(game:Game, e:Event<ChangeScreenEventArgs>)=
+        and LoginScreen(game:Game, e:Event<ChangeScreenEventArgs>) as this=
             inherit Menu(game)
-            
+            let recentUsers = []
+            let printElements =
+                try
+                    let prevUsers = System.Xml.Linq.XElement.Load("recentUsers.xml")
+                    for (f:System.Xml.Linq.XElement) in prevUsers.Elements() do
+                        let userName = f.Element(System.Xml.Linq.XName.Get("name"))
+                        let userId = f.Element(System.Xml.Linq.XName.Get("id"))
+                        let userEmail = f.Element(System.Xml.Linq.XName.Get("email"))
+                        game.Components.Add(new User(game, (int) userId.Value, userName.Value, userEmail.Value, new Vector2(100.0f,((float32)userId.Value * 110.0f))))
+                with
+                    | :? System.IO.FileNotFoundException as ex -> ()
             let event = e
             let deselectTextBoxEvent = new Event<_>()
 
-            let mutable username = new TextBox(game, "textbox", new Vector2(0.0f,100.0f), deselectTextBoxEvent)
-            let mutable password = new TextBox(game, "textbox", new Vector2(0.0f,250.0f), deselectTextBoxEvent)
+            let mutable username = new TextBox(game, "textbox", "textbox_shadow", new Vector2(0.0f,100.0f), deselectTextBoxEvent)
+            let mutable password = new TextBox(game, "textbox", "textbox_shadow", new Vector2(0.0f,250.0f), deselectTextBoxEvent)
 
-            let mutable nextButton = new Button(game, "nextButton", new Vector2( 300.0f, 300.0f))
+            let mutable nextButton = new TextButton(game, "nextButton", "no_shadow", "Login", new Vector2( 400.0f, 300.0f))
 
-            let mutable leftClick = true //so click form last screen is not read through
-
+            
+            
+            //Event Handlers
             let deselectTextBoxHandler args=
                 username.Deselect
                 password.Deselect
+            let LoginHandler args= 
+                event.Trigger(new ChangeScreenEventArgs(this, new MainMenu(this.Game, event)))
 
             [<CLIEvent>]
             member this.DeselectTextBoxes = deselectTextBoxEvent.Publish
 
             override this.Initialize()=
-                
                 this.DeselectTextBoxes.Add(fun args -> deselectTextBoxHandler args)
-                this.Game.Components.Add(username)
-                this.Game.Components.Add(password)
+                nextButton.Click.Add(fun args-> LoginHandler args)
+                //this.Game.Components.Add(username)
+                //this.Game.Components.Add(password)
                 this.Game.Components.Add(nextButton)
                 base.Initialize()
 
             override this.LoadContent()=
                 base.LoadContent()
 
-            override this.Update(gameTime)=
-                if Mouse.GetState().LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    this.ClickOption (new Vector2(float32(Mouse.GetState().X), float32( Mouse.GetState().Y)))
-                if Mouse.GetState().LeftButton = ButtonState.Released then
-                    leftClick <- false
-                base.Update(gameTime)
-
-            member this.ClickOption(mouseClickPos:Vector2)=
-                match mouseClickPos with
-                    | x when base.InBounds(x, nextButton) -> event.Trigger(new ChangeScreenEventArgs(this, new MainMenu(this.Game, event))) //clicked on next button
-                    | _ -> ()// clicked elsewhere, do nothing
-
-
             override this.DestroyScene() =
                 this.Game.Components.Remove(username) |> ignore
                 this.Game.Components.Remove(password) |> ignore
                 this.Game.Components.Remove(nextButton) |> ignore
+                base.DestroyScene()
 
-        and GenderSelectScreen(game:Game, e:Event<ChangeScreenEventArgs>)=
+        and GenderSelectScreen(game:Game, e:Event<ChangeScreenEventArgs>) as this=
             inherit Menu(game)
 
-            let mutable maleButton = null
-            let mutable femaleButton = null
+            let maleButton = new Button(game, "maleButton", "no_shadow", new Vector2(0.0f,0.0f))
+            let femaleButton = new Button(game, "femaleButton", "no_shadow", new Vector2(400.0f,0.0f))
             let event = e
-            
-            let mutable leftClick = true //so click form last screen is not read through
+
+            let genderSelectedHandler (args:ButtonClickedEventArgs)= 
+                match args.Sender with
+                    | x when x = maleButton -> event.Trigger(new ChangeScreenEventArgs(this, new MeasurementScreen(this.Game, "male", event)))
+                    | x when x = femaleButton -> event.Trigger(new ChangeScreenEventArgs(this, new MeasurementScreen(this.Game, "female", event)))
+                    | _ -> () //should never happen as there is no other buttons
 
             override this.Initialize()=
-                maleButton <- new Button(game, "maleButton", new Vector2(0.0f,0.0f))
-                femaleButton <- new Button(game, "femaleButton", new Vector2(400.0f,0.0f))
-                maleButton.DrawOrder = 1 |> ignore
-                femaleButton.DrawOrder = 1 |> ignore
+                maleButton.Click.Add(fun args -> genderSelectedHandler args)
+                femaleButton.Click.Add(fun args -> genderSelectedHandler args)
                 this.Game.Components.Add(maleButton)
                 this.Game.Components.Add(femaleButton)
                 base.Initialize()
@@ -267,61 +259,73 @@
             override this.LoadContent()=
                 base.LoadContent()
 
-            override this.Update(gameTime)=
-                if Mouse.GetState().LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    this.ClickOption (new Vector2(float32(Mouse.GetState().X), float32( Mouse.GetState().Y)))
-                if Mouse.GetState().LeftButton = ButtonState.Released then
-                    leftClick <- false
-                base.Update(gameTime)
-
-            member this.ClickOption(mouseClickPos:Vector2)=
-                match mouseClickPos with
-                    | x when base.InBounds(x, maleButton) -> event.Trigger(new ChangeScreenEventArgs(this, new MeasurementScreen(this.Game, "male", event))) //clicked on measure button
-                    | x when base.InBounds(x, femaleButton) -> event.Trigger(new ChangeScreenEventArgs(this, new MeasurementScreen(this.Game, "female", event))) //clicked on shop button
-                    | _ -> ()// clicked elsewhere, do nothing
-
             override this.DestroyScene()=
                 this.Game.Components.Remove(maleButton) |> ignore
                 this.Game.Components.Remove(femaleButton) |> ignore
+                base.DestroyScene()
 
-        and StoreScreen(game:Game, e:Event<ChangeScreenEventArgs>)=
+        and StoreScreen(game:Game, e:Event<ChangeScreenEventArgs>) as this=
             inherit Menu(game)
 
             let dbAccess = new Database.DatabaseAccess()
 
-            let mutable garments:List<Store.Garment> = []
             let mutable garmentItems = new GarmentList(game)
             let mutable femaleButton = null
             let event = e
-            
-            let mutable leftClick = true //so click form last screen is not read through
+
+            let garmentClickHandler (args:GarmentItemClickedEventArgs)= 
+                e.Trigger(new ChangeScreenEventArgs(this, new GarmentScreen(this.Game, args.Garment, event, this)))
 
             override this.Initialize()=
-                garments <- dbAccess.getGarments null
-                List.map (fun (x:Store.Garment) -> garmentItems.Add(new GarmentItem(game, x.Name, "", new Vector2(100.0f,((float32)x.ID * 40.0f))))) garments
+                garmentItems <- new GarmentList(game)
+                dbAccess.getGarments null
+                |> Seq.distinctBy (fun (x:Store.Garment)-> x.Name) //remove duplicate items (e.g. size variations)
+                |> Seq.iter (fun (x:Store.Garment) -> (let newGarment = new GarmentItem(game, x, new Vector2(100.0f,((float32)x.ID * 110.0f))) //make a new garment Object
+                                                       newGarment.Click.Add(fun x -> garmentClickHandler x) //add it's click handler
+                                                       garmentItems.Add(newGarment))) //add it to the garment items list
                 this.Game.Components.Add(garmentItems)
                 base.Initialize()
 
             override this.LoadContent()=
                 base.LoadContent()
 
-            override this.Update(gameTime)=
-                if Mouse.GetState().LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    this.ClickOption (new Vector2(float32(Mouse.GetState().X), float32( Mouse.GetState().Y)))
-                if Mouse.GetState().LeftButton = ButtonState.Released then
-                    leftClick <- false
-                base.Update(gameTime)
-
-            member this.ClickOption(mouseClickPos:Vector2)=
-                match mouseClickPos with
-                    | x when base.InBounds(x, femaleButton) -> event.Trigger(new ChangeScreenEventArgs(this, new MeasurementScreen(this.Game, "female", event))) //clicked on shop button
-                    | _ -> ()// clicked elsewhere, do nothing
-
             override this.DestroyScene()=
-                this.Game.Components.Remove(femaleButton) |> ignore
+                this.Game.Components.Remove(garmentItems) |> ignore
+                base.DestroyScene()
 
+        and GarmentScreen(game:Game, garment:Store.Garment, e:Event<ChangeScreenEventArgs>, prevScreen) as this=
+            inherit Menu(game)
+
+            let event = e
+            let center = new Vector2(float32(game.GraphicsDevice.Viewport.Width / 2), float32(game.GraphicsDevice.Viewport.Height / 2))
+            let mutable font:SpriteFont = null
+            let mutable backButton = new TextButton(game, "backButton", "no_shadow", "Back",new Vector2(10.0f,300.0f))
+            let mutable garmentNameLabel = new Label(game, garment.Name, new Vector2(center.X, 20.0f))
+            let mutable garmentImage:Image = null
+
+            let backButtonClickHandler (args) =  
+                event.Trigger(new ChangeScreenEventArgs(this, prevScreen))
+
+            let buttonClickedEvent = new Event<GarmentItemClickedEventArgs>()
+            [<CLIEvent>]
+            member this.Click = buttonClickedEvent.Publish
+
+            override this.LoadContent()=
+                garmentImage <- new Image(game, garment, new Vector2(600.0f, 50.0f))
+                this.Game.Components.Add(garmentImage)
+                font <- game.Content.Load<SpriteFont>("Font")
+
+            override this.Initialize()=
+                game.Components.Add(backButton)
+                game.Components.Add(garmentNameLabel)
+                backButton.Click.Add(fun (args) -> backButtonClickHandler (args))
+                base.Initialize()  
+            
+            override this.DestroyScene()=
+                this.Game.Components.Remove(backButton) |> ignore
+                this.Game.Components.Remove(garmentNameLabel) |> ignore
+                this.Game.Components.Remove(garmentImage) |> ignore
+                base.DestroyScene()
 
         and ChangeScreenEventArgs(oldScreen:Menu, newScreen:Menu)=
             inherit System.EventArgs()

@@ -54,8 +54,8 @@ open System
                 with 
                     | :? MySqlException as ex -> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
                                                   null)
-                    | :? Exception as ex-> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
-                                            null)
+                    | ex-> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
+                            null)
 
             member this.getGarments customer=
                 try
@@ -79,7 +79,7 @@ open System
                 with 
                     | :? MySqlException as ex -> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
                                                   List<Store.Garment>.Empty )
-                    | :? Exception as ex-> (MessageBox.Show(ex.Message ) |> ignore
-                                            List<Store.Garment>.Empty )
+                    | ex-> (MessageBox.Show(ex.Message ) |> ignore
+                            List<Store.Garment>.Empty )
 
         let dbA = new DatabaseAccess()

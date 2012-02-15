@@ -19,13 +19,14 @@
             do this.Content.RootDirectory <- "XnaGameContent"
             let graphicsDeviceManager = new GraphicsDeviceManager(this)
 
-            let screenWidth, screenHeight = 960, 480
+            let screenWidth, screenHeight = 960, 600
 
             let mutable spriteBatch : SpriteBatch = null
 
             let changeScreenEvent = new Event<ChangeScreenEventArgs>()
-
-            let login = new StoreScreen(this, changeScreenEvent)
+            let login = new LoginScreen(this, changeScreenEvent)
+            //let login = new StoreScreen(this, changeScreenEvent)
+            //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent)
 
             let loadNewScreen (args:ChangeScreenEventArgs)= 
                 args.OldScreen.DestroyScene()
@@ -44,7 +45,6 @@
                 graphicsDeviceManager.ApplyChanges() 
                 spriteBatch <- new SpriteBatch(game.GraphicsDevice)
 
-                //this.Event1.Add(loadNewScreen(sender, arg))
                 this.ChangeScreen.Add(fun (args) -> loadNewScreen (args))
 
                 this.Components.Add(login)

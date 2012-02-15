@@ -13,7 +13,14 @@ XnaGameContent\nextButton.xnb
 XnaGameContent\femaleButton.xnb
 XnaGameContent\maleButton.xnb
 XnaGameContent\male.xnb
-XnaGameContent\texture_0.xnb
-XnaGameContent\garment_bg.xnb
 XnaGameContent\garmentItemFont.xnb
+XnaGameContent\backButton.xnb
+XnaGameContent\textbox_shaddow.xnb
+XnaGameContent\garmentButton.xnb
+XnaGameContent\GarmentThumbNotFound.xnb
+XnaGameContent\GarmentThumbLoading.xnb
+XnaGameContent\GarmentImageLoading.xnb
+XnaGameContent\GarmentImageNotFound.xnb
+XnaGameContent\texture_1.xnb
+XnaGameContent\malechub.xnb
 XnaGameContent\measurementsButton.png

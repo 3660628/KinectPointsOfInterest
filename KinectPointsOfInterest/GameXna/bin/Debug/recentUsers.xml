@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <!-- TODO: replace this Asset with your own XML asset data. -->
+  <User>
+	<id>0</id>
+    <name>Ewen</name>
+    <email>ewencluley@hotmail.com</email>
+  </User>
+  <User>
+	<id>1</id>
+    <name>Emily</name>
+    <email>eebryant@hotmail.co.uk</email>
+  </User>
+</XnaContent>

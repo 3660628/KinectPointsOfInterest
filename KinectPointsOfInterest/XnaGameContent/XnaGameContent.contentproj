@@ -42,6 +42,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="textbox.png">
+      <Name>textbox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="whiteHorizontalBar.png">
       <Name>whiteLine</Name>
       <Importer>TextureImporter</Importer>
@@ -97,13 +102,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="textbox.png">
-      <Name>textbox</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="textBoxFont.spritefont">
       <Name>textBoxFont</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -144,10 +142,57 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="garment_bg.png">
-      <Name>garment_bg</Name>
+    <Compile Include="textbox_shaddow.png">
+      <Name>textbox_shaddow</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="garmentButton.png">
+      <Name>garmentButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="backButton.png">
+      <Name>backButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GarmentThumbNotFound.png">
+      <Name>GarmentThumbNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GarmentThumbLoading.png">
+      <Name>GarmentThumbLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GarmentImageLoading.png">
+      <Name>GarmentImageLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="GarmentImageNotFound.png">
+      <Name>GarmentImageNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="malechub.FBX">
+      <Name>malechub</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

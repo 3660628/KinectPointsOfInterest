@@ -89,7 +89,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox.xnb</Output>
-      <Time>2012-02-03T10:58:11.6754436+00:00</Time>
+      <Time>2012-02-12T12:42:58.8659068+00:00</Time>
     </Item>
     <Item>
       <Source>textBoxFont.spritefont</Source>
@@ -134,22 +134,94 @@
       <Processor>ModelProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\male.xnb</Output>
-      <Time>2012-02-06T11:38:24.2968117+00:00</Time>
+      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
       <Dependency>
         <Key>obj\x86\Debug\male_0.xml</Key>
-        <Value>2012-02-06T11:38:29.7651244+00:00</Value>
+        <Value>2012-02-15T09:12:00.2240973+00:00</Value>
       </Dependency>
-      <Request>C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_0.xnb</Request>
+      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Request>
     </Item>
     <Item>
       <Source>male.FBX</Source>
       <Importer>FbxImporter</Importer>
       <Options>IntermediateFile, DontCacheImportedData</Options>
       <Output>obj\x86\Debug\male_0.xml</Output>
-      <Time>2012-02-06T11:38:24.2968117+00:00</Time>
+      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
     </Item>
     <Item>
-      <Source>texture.png</Source>
+      <Source>garmentItemFont.spritefont</Source>
+      <Name>garmentItemFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb</Output>
+      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
+    </Item>
+    <Item>
+      <Source>backButton.png</Source>
+      <Name>backButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\backButton.xnb</Output>
+      <Time>2012-02-12T10:41:15.9365755+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textbox_shaddow.png</Source>
+      <Name>textbox_shaddow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox_shaddow.xnb</Output>
+      <Time>2012-02-12T12:43:45.3225639+00:00</Time>
+    </Item>
+    <Item>
+      <Source>garmentButton.png</Source>
+      <Name>garmentButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentButton.xnb</Output>
+      <Time>2012-02-12T10:41:40.7389941+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentThumbNotFound.png</Source>
+      <Name>GarmentThumbNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentThumbNotFound.xnb</Output>
+      <Time>2012-02-12T13:03:47.4256866+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentThumbLoading.png</Source>
+      <Name>GarmentThumbLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentThumbLoading.xnb</Output>
+      <Time>2012-02-12T13:05:39.8811187+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentImageLoading.png</Source>
+      <Name>GarmentImageLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentImageLoading.xnb</Output>
+      <Time>2012-02-13T11:50:30.3173898+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentImageNotFound.png</Source>
+      <Name>GarmentImageNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentImageNotFound.xnb</Output>
+      <Time>2012-02-13T11:50:30.3543919+00:00</Time>
+    </Item>
+    <Item>
+      <Source>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\makehuman\exports\texture.png</Source>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Parameters>
@@ -161,26 +233,29 @@
         <Data Key="PremultiplyAlpha" Type="bool">true</Data>
       </Parameters>
       <Options>None</Options>
-      <Output>C:\Users\Ewen\documents\visual studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_0.xnb</Output>
-      <Time>2012-02-06T11:38:24.3008119+00:00</Time>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Output>
+      <Time>2012-01-30T17:52:18.8779455+00:00</Time>
     </Item>
     <Item>
-      <Source>garment_bg.png</Source>
-      <Name>garment_bg</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
+      <Source>malechub.FBX</Source>
+      <Name>malechub</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garment_bg.xnb</Output>
-      <Time>2012-02-10T16:38:10.8643247+00:00</Time>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\malechub.xnb</Output>
+      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
+      <Dependency>
+        <Key>obj\x86\Debug\malechub_0.xml</Key>
+        <Value>2012-02-14T11:08:29.2722497+00:00</Value>
+      </Dependency>
+      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Request>
     </Item>
     <Item>
-      <Source>garmentItemFont.spritefont</Source>
-      <Name>garmentItemFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb</Output>
-      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
+      <Source>malechub.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\malechub_0.xml</Output>
+      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

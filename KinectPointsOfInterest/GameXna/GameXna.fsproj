@@ -40,6 +40,18 @@
     <PlatformTarget>x86</PlatformTarget>
     <DocumentationFile>bin\Release\GameXna.XML</DocumentationFile>
   </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <ItemGroup>
+    <Compile Include="Body.fs" />
+    <Compile Include="Kinect.fs" />
+    <Compile Include="BodyMeasurements.fs" />
+    <Compile Include="Store.fs" />
+    <Compile Include="MenuItems.fs" />
+    <Compile Include="Screens.fs" />
+    <Compile Include="Game.fs" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="EventControllers">
       <HintPath>..\EventControllers.dll</HintPath>
@@ -60,8 +72,8 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <ProjectReference Include="..\KinectHelperMethods\KinectHelperMethods.csproj">
       <Name>KinectHelperMethods</Name>
       <Project>{bbed4607-252b-4ff9-864f-292eb3f6de53}</Project>
@@ -73,18 +85,6 @@
       <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Body.fs" />
-    <Compile Include="Kinect.fs" />
-    <Compile Include="BodyMeasurements.fs" />
-    <Compile Include="MenuItems.fs" />
-    <Compile Include="Store.fs" />
-    <Compile Include="Screens.fs" />
-    <Compile Include="Game.fs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">
