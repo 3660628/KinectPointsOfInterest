@@ -74,8 +74,8 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <ProjectReference Include="..\KinectHelperMethods\KinectHelperMethods.csproj">
-      <Name>KinectHelperMethods</Name>
+    <ProjectReference Include="..\KinectHelperMethods\HelperMethods.csproj">
+      <Name>HelperMethods</Name>
       <Project>{bbed4607-252b-4ff9-864f-292eb3f6de53}</Project>
       <Private>True</Private>
     </ProjectReference>

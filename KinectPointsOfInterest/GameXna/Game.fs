@@ -19,18 +19,23 @@
             do this.Content.RootDirectory <- "XnaGameContent"
             let graphicsDeviceManager = new GraphicsDeviceManager(this)
 
-            let screenWidth, screenHeight = 960, 600
+            let screenWidth, screenHeight = 1024, 768
 
             let mutable spriteBatch : SpriteBatch = null
 
+            let kinectUI = new KinectCursor(this)
+            do kinectUI.DrawOrder <- 99
+            
+
             let changeScreenEvent = new Event<ChangeScreenEventArgs>()
-            let login = new LoginScreen(this, changeScreenEvent)
+            let login = new RecentUsersScreen(this, changeScreenEvent, kinectUI)
+            //do login.KinectUI <- kinectUI //pass the kinectUI object to the first screen
             //let login = new StoreScreen(this, changeScreenEvent)
             //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent)
 
             let loadNewScreen (args:ChangeScreenEventArgs)= 
                 args.OldScreen.DestroyScene()
-                this.Components.Remove(args.OldScreen) |> ignore
+                System.Diagnostics.Debug.WriteLine("lastScreen"+ string (this.Components.Remove(args.OldScreen)))
                 this.Components.Add(args.NewScreen) |> ignore
 
 
@@ -48,6 +53,7 @@
                 this.ChangeScreen.Add(fun (args) -> loadNewScreen (args))
 
                 this.Components.Add(login)
+                this.Components.Add(kinectUI)
                 
                 base.Initialize()
 

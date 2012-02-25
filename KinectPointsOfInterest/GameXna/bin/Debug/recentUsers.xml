@@ -11,4 +11,24 @@
     <name>Emily</name>
     <email>eebryant@hotmail.co.uk</email>
   </User>
+  <User>
+	<id>2</id>
+    <name>Felix</name>
+    <email>felixz@hotmail.com</email>
+  </User>
+  <User>
+	<id>3</id>
+    <name>Jake</name>
+    <email>eebryant@hotmail.co.uk</email>
+  </User>
+  <User>
+	<id>4</id>
+    <name>Joanne</name>
+    <email>ewencluley@hotmail.com</email>
+  </User>
+  <User>
+	<id>5</id>
+    <name>Kelly</name>
+    <email>eebryant@hotmail.co.uk</email>
+  </User>
 </XnaContent>

@@ -1,0 +1,5 @@
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\KinectHelperMethods\bin\Release\KinectHelperMethods.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\KinectHelperMethods\bin\Release\KinectHelperMethods.pdb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\KinectHelperMethods\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\KinectHelperMethods\obj\Release\KinectHelperMethods.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\KinectHelperMethods\obj\Release\KinectHelperMethods.pdb

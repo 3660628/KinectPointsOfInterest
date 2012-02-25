@@ -15,7 +15,7 @@ open System.IO
     //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
-    type BodyMeasurements(game, kinect:KinectPointsOfInterest.Kinect, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
+    type BodyMeasurements(game, kinect:KinectPointsOfInterest.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
         
         let phi = 1.61803399 //golden ratio
@@ -423,7 +423,7 @@ open System.IO
     //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
-    type BodyMeasurementsPostProcess(game:Game, kinect:KinectPointsOfInterest.Kinect, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
+    type BodyMeasurementsPostProcess(game:Game, kinect:KinectPointsOfInterest.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
         
         let phi = 1.61803399 //golden ratio

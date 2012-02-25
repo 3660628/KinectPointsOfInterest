@@ -1,19 +1,18 @@
 ﻿namespace KinectPointsOfInterest
     open Microsoft.Xna.Framework
+    open Microsoft.Xna.Framework.Audio
     open Microsoft.Xna.Framework.Graphics
     open Microsoft.Research.Kinect.Nui
-
-    
 
     open KinectHelperMethods
 
     open System
+    open System.Windows.Forms
     
-    type Kinect(game:Game)=
+    type KinectMeasure(game:Game)=
         inherit DrawableGameComponent(game)
 
         let nui = Runtime.Kinects.[0]//kinect natural user interface object
-        let game = game
         let body = new BodyData.Body()
 
         let maxDist = 4000
@@ -112,4 +111,110 @@
 
             body.DepthImg <- distancesArray
             body
+
+    [<AllowNullLiteral>] //allow null as a proper value
+    type KinectCursor(game:Game)=
+        inherit DrawableGameComponent(game)
+        let mutable nui = null
+        
+        let maxDist = 4000
+        let minDist = 850
+        let distOffset = maxDist - minDist
+
+        let mutable leftHand = Vector3.Zero
+        let mutable rightHand = Vector3.Zero
+        let mutable centerHip = Vector3.Zero //central hip position for reference with the hand
+        let mutable rightHandColor = Color.White
+        let mutable leftHandColor = Color.White
+
+        let mutable rightHandSprite:Texture2D = null //hand cursor texture
+        let mutable leftHandSprite:Texture2D = null
+        let mutable spriteBatch = null //for drawing the hand cursor
+
+        let mutable clickSound:SoundEffect = null
+        let mutable countClicks = 0
+
+        let kinectInitalize =
+            try 
+                nui <- Runtime.Kinects.[0]//kinect natural user interface object
+                do nui.Initialize(RuntimeOptions.UseSkeletalTracking ||| RuntimeOptions.UseDepthAndPlayerIndex)
+                do nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex)
+                nui.SkeletonEngine.TransformSmooth <- true
+                let mutable parameters = new TransformSmoothParameters() // smooth out skeletal jiter
+                parameters.Smoothing <- 0.5f
+                parameters.Correction <- 0.3f
+                parameters.Prediction <- 0.3f
+                parameters.JitterRadius <- 1.0f
+                parameters.MaxDeviationRadius <- 0.3f
+                nui.SkeletonEngine.SmoothParameters <- parameters
+            with
+                | :? System.InvalidOperationException -> System.Diagnostics.Debug.Write("Kinect not connected!")
+                | :? System.ArgumentOutOfRangeException -> System.Diagnostics.Debug.Write("Kinect not connected!")
+        
+       
+        override this.Initialize ()=
+            spriteBatch <- new SpriteBatch(game.GraphicsDevice)
+            clickSound <- game.Content.Load<SoundEffect>("click_1")
+            this.LoadContent()
+            
+        override this.LoadContent()=
+            rightHandSprite <- game.Content.Load<Texture2D>("UI/HandRight70x81")
+            leftHandSprite <- game.Content.Load<Texture2D>("UI/HandLeft70x81")
+            
+        override this.Update gameTime=
+            if nui <> null then //only update possitions and get hand positions if kinect connected
+                let skeletonFrame = nui.SkeletonEngine.GetNextFrame 0
+                if skeletonFrame <> null then
+                    for skeleton in skeletonFrame.Skeletons do
+                        if skeleton.TrackingState.Equals(SkeletonTrackingState.Tracked) then
+                            //let depthWidth, depthHeight = 320, 240
+                            let leftHandJ = skeleton.Joints.[JointID.HandLeft]
+                            leftHand <- new Vector3(leftHandJ.GetScreenPosition(nui, 1024, 768).X, leftHandJ.GetScreenPosition(nui, 1024, 768).Y, leftHandJ.Position.Z )
+                            let rightHandJ = skeleton.Joints.[JointID.HandRight]
+                            rightHand <- new Vector3(rightHandJ.GetScreenPosition(nui, 1024, 768).X, rightHandJ.GetScreenPosition(nui, 1024, 768).Y, rightHandJ.Position.Z )
+                            let centerHipJ = skeleton.Joints.[JointID.HipCenter]
+                            centerHip <- new Vector3(centerHipJ.GetScreenPosition(nui, 1024, 768).X, centerHipJ.GetScreenPosition(nui, 1024, 768).Y, centerHipJ.Position.Z )
+                            ()
+
+                if (centerHip.Z - rightHand.Z) >= 0.4f && rightHandColor.Equals(Color.White) then //a click with right hand
+                    System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>kinectClick @ " + string gameTime.TotalGameTime.Seconds + " seconds<<<<<<<<<<<<")
+                    countClicks <- countClicks + 1
+                    rightHandColor <- Color.Red 
+                    clickSound.Play() |> ignore
+                    System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>end of kinect click<<<<<<<<<<<<")
+                
+                else if (centerHip.Z - rightHand.Z) < 0.4f then //release right hand click
+                    rightHandColor <- Color.White
+
+                if (centerHip.Z - leftHand.Z) >= 0.4f && leftHandColor.Equals(Color.White) then //a click with left hand
+                    leftHandColor <- Color.Red 
+                    clickSound.Play() |> ignore
+                else if (centerHip.Z - leftHand.Z) < 0.4f then //relese left hand click
+                    leftHandColor <- Color.White
+            
+
+        override this.Draw gameTime=
+            if nui <> null then //only draw the hand cursor if a kinect is connected
+                spriteBatch.Begin()
+                spriteBatch.Draw(rightHandSprite, new Vector2(rightHand.X, rightHand.Y), rightHandColor) //draw right hand cursor
+                spriteBatch.Draw(leftHandSprite, new Vector2(leftHand.X, leftHand.Y), leftHandColor) //draw left hand cursor
+                spriteBatch.End()
+
+        member this.GetState() = new KinectCursorState(leftHand, (if leftHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), rightHand, (if rightHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+        
+    //****************************************************************       
+    and KinectCursorState(leftPos, leftButton, rightPos, rightButton)=
+        
+        member this.LeftHandPosition
+            with get() = leftPos
+        
+        member this.RightHandPosition
+            with get() = rightPos
+
+        member this.LeftButton
+            with get() = leftButton
+
+        member this.RightButton
+            with get() = rightButton
+
 

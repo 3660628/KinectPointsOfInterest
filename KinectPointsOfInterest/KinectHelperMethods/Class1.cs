@@ -46,8 +46,8 @@ namespace KinectHelperMethods
             float depthY;
  
             kinectRuntime.SkeletonEngine.SkeletonToDepthImage(joint.Position, out depthX, out depthY);
-            depthX = Math.Max(0, Math.Min(depthX * 320, 320));  //convert to 320, 240 space
-            depthY = Math.Max(0, Math.Min(depthY * 240, 240));  //convert to 320, 240 space
+            depthX = Math.Max(0, Math.Min(depthX * screenWidth, screenWidth));  //convert to 320, 240 space
+            depthY = Math.Max(0, Math.Min(depthY * screenHeight, screenHeight));  //convert to 320, 240 space
  
             //int colorX;
             //int colorY;

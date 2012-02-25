@@ -1,0 +1,1 @@
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\obj\x86\Release\ResolveAssemblyReference.cache

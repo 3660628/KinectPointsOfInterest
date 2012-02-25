@@ -1,0 +1,455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline" xmlns:Framework="Microsoft.Xna.Framework" xmlns:Processors="Microsoft.Xna.Framework.Content.Pipeline.Processors">
+  <Asset Type="Pipeline:BuildItemCollection">
+    <Item>
+      <Source>Sprite.png</Source>
+      <Name>Sprite</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\Sprite.xnb</Output>
+      <Time>2011-12-30T11:14:33.2259642+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textbox.png</Source>
+      <Name>textbox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\textbox.xnb</Output>
+      <Time>2012-02-12T12:42:58.8659068+00:00</Time>
+    </Item>
+    <Item>
+      <Source>whiteHorizontalBar.png</Source>
+      <Name>whiteLine</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\whiteLine.xnb</Output>
+      <Time>2012-01-02T17:47:11.7475098+00:00</Time>
+    </Item>
+    <Item>
+      <Source>dot.png</Source>
+      <Name>dot</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\dot.xnb</Output>
+      <Time>2012-01-08T14:19:36.7061716+00:00</Time>
+    </Item>
+    <Item>
+      <Source>measurementsButton.png</Source>
+      <Name>measureButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\measureButton.xnb</Output>
+      <Time>2012-02-01T14:11:36.574733+00:00</Time>
+    </Item>
+    <Item>
+      <Source>shopButton.png</Source>
+      <Name>shopButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\shopButton.xnb</Output>
+      <Time>2012-02-01T14:11:36.5757331+00:00</Time>
+    </Item>
+    <Item>
+      <Source>cursor.png</Source>
+      <Name>cursor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\cursor.xnb</Output>
+      <Time>2012-02-01T17:30:24.1516423+00:00</Time>
+    </Item>
+    <Item>
+      <Source>nextButton.png</Source>
+      <Name>nextButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\nextButton.xnb</Output>
+      <Time>2012-02-05T19:37:51.8393907+00:00</Time>
+    </Item>
+    <Item>
+      <Source>femaleButton.png</Source>
+      <Name>femaleButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\femaleButton.xnb</Output>
+      <Time>2012-02-06T10:41:48.3644341+00:00</Time>
+    </Item>
+    <Item>
+      <Source>maleButton.png</Source>
+      <Name>maleButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\maleButton.xnb</Output>
+      <Time>2012-02-06T10:41:48.3656841+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textbox_shaddow.png</Source>
+      <Name>textbox_shaddow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\textbox_shaddow.xnb</Output>
+      <Time>2012-02-12T12:43:45.3225639+00:00</Time>
+    </Item>
+    <Item>
+      <Source>garmentButton.png</Source>
+      <Name>garmentButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\garmentButton.xnb</Output>
+      <Time>2012-02-12T10:41:40.7389941+00:00</Time>
+    </Item>
+    <Item>
+      <Source>backButton.png</Source>
+      <Name>backButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\backButton.xnb</Output>
+      <Time>2012-02-12T10:41:15.9365755+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentThumbNotFound.png</Source>
+      <Name>GarmentThumbNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\GarmentThumbNotFound.xnb</Output>
+      <Time>2012-02-12T13:03:47.4256866+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentThumbLoading.png</Source>
+      <Name>GarmentThumbLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\GarmentThumbLoading.xnb</Output>
+      <Time>2012-02-12T13:05:39.8811187+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentImageLoading.png</Source>
+      <Name>GarmentImageLoading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\GarmentImageLoading.xnb</Output>
+      <Time>2012-02-13T11:50:30.3173898+00:00</Time>
+    </Item>
+    <Item>
+      <Source>GarmentImageNotFound.png</Source>
+      <Name>GarmentImageNotFound</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\GarmentImageNotFound.xnb</Output>
+      <Time>2012-02-13T11:50:30.3543919+00:00</Time>
+    </Item>
+    <Item>
+      <Source>noUserImage.jpg</Source>
+      <Name>noUserImage</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\noUserImage.xnb</Output>
+      <Time>2012-02-15T18:00:01.0431796+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\BlueButton200x100.png</Source>
+      <Name>UI\BlueButton200x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\BlueButton200x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8049598+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\RedButton200x100.png</Source>
+      <Name>UI\RedButton200x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\RedButton200x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8099601+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\ShadowButton200x100.png</Source>
+      <Name>UI\ShadowButton200x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\ShadowButton200x100.xnb</Output>
+      <Time>2012-02-17T12:53:27.7693374+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\YellowButton200x100.png</Source>
+      <Name>UI\YellowButton200x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\YellowButton200x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8159605+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\RedButton400x100.png</Source>
+      <Name>UI\RedButton400x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\RedButton400x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8109602+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\ShadowButton400x100.png</Source>
+      <Name>UI\ShadowButton400x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\ShadowButton400x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8149604+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\BlueButton400x100.png</Source>
+      <Name>UI\BlueButton400x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\BlueButton400x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.80796+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\YellowButton400x100.png</Source>
+      <Name>UI\YellowButton400x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\YellowButton400x100.xnb</Output>
+      <Time>2012-02-17T12:33:14.8189606+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\background.png</Source>
+      <Name>UI\background</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\background.xnb</Output>
+      <Time>2012-02-18T20:04:47.5413864+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\FemaleButton300x300.png</Source>
+      <Name>UI\FemaleButton300x300</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\FemaleButton300x300.xnb</Output>
+      <Time>2012-02-17T14:34:06.5302731+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\MaleButton300x300.png</Source>
+      <Name>UI\MaleButton300x300</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\MaleButton300x300.xnb</Output>
+      <Time>2012-02-17T14:34:06.5322732+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\MeasureButton300x300.png</Source>
+      <Name>UI\MeasureButton300x300</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\MeasureButton300x300.xnb</Output>
+      <Time>2012-02-18T12:31:20.7962338+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\ShopButton300x300.png</Source>
+      <Name>UI\ShopButton300x300</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\ShopButton300x300.xnb</Output>
+      <Time>2012-02-18T12:31:20.7972339+00:00</Time>
+    </Item>
+    <Item>
+      <Source>click_1.mp3</Source>
+      <Name>click_1</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\click_1.xnb</Output>
+      <Time>2012-01-02T17:15:15.4509141+00:00</Time>
+    </Item>
+    <Item>
+      <Source>Font.spritefont</Source>
+      <Name>Font</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\Font.xnb</Output>
+      <Time>2012-01-04T15:49:42.0943864+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textBoxFont.spritefont</Source>
+      <Name>textBoxFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\textBoxFont.xnb</Output>
+      <Time>2012-02-17T12:37:49.7866879+00:00</Time>
+    </Item>
+    <Item>
+      <Source>garmentItemFont.spritefont</Source>
+      <Name>garmentItemFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\garmentItemFont.xnb</Output>
+      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
+    </Item>
+    <Item>
+      <Source>BEEP1A.WAV</Source>
+      <Name>BEEP1A</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\BEEP1A.xnb</Output>
+      <Time>2012-01-31T18:01:00.107773+00:00</Time>
+    </Item>
+    <Item>
+      <Source>male.FBX</Source>
+      <Name>male</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\male.xnb</Output>
+      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
+      <Dependency>
+        <Key>obj\x86\Release\male_0.xml</Key>
+        <Value>2012-02-18T19:28:36.573817+00:00</Value>
+      </Dependency>
+      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\texture_0.xnb</Request>
+    </Item>
+    <Item>
+      <Source>malechub.FBX</Source>
+      <Name>malechub</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\malechub.xnb</Output>
+      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
+      <Dependency>
+        <Key>obj\x86\Release\malechub_0.xml</Key>
+        <Value>2012-02-18T19:28:40.583024+00:00</Value>
+      </Dependency>
+      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\texture_0.xnb</Request>
+    </Item>
+    <Item>
+      <Source>male.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Release\male_0.xml</Output>
+      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
+    </Item>
+    <Item>
+      <Source>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\makehuman\exports\texture.png</Source>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Parameters>
+        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
+        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
+        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
+        <Data Key="GenerateMipmaps" Type="bool">true</Data>
+        <Data Key="ResizeToPowerOfTwo" Type="bool">false</Data>
+        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
+      </Parameters>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\texture_0.xnb</Output>
+      <Time>2012-01-30T17:52:18.8779455+00:00</Time>
+    </Item>
+    <Item>
+      <Source>malechub.FBX</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Release\malechub_0.xml</Output>
+      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\BackgroundFooter1024x116.png</Source>
+      <Name>UI\BackgroundFooter1024x116</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\BackgroundFooter1024x116.xnb</Output>
+      <Time>2012-02-18T19:59:39.9239893+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\HandLeft70x81.png</Source>
+      <Name>UI\HandLeft70x81</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\HandLeft70x81.xnb</Output>
+      <Time>2012-02-19T10:25:11.6131994+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\HandRight70x81.png</Source>
+      <Name>UI\HandRight70x81</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\UI\HandRight70x81.xnb</Output>
+      <Time>2012-02-19T10:25:11.6287994+00:00</Time>
+    </Item>
+    <BuildSuccessful>true</BuildSuccessful>
+    <Settings>
+      <TargetPlatform>Windows</TargetPlatform>
+      <TargetProfile>HiDef</TargetProfile>
+      <BuildConfiguration>Release</BuildConfiguration>
+      <CompressContent>false</CompressContent>
+      <RootDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\XnaGameContent\obj\x86\Release\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Release\XnaGameContent\</OutputDirectory>
+    </Settings>
+    <Assemblies>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.XImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.VideoImporters.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.TextureImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.FBXImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.EffectImporter.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.AudioImporters.dll</Key>
+        <Value>2010-08-23T12:41:18+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2011-07-26T10:44:46.996144+01:00</Value>
+      </Assembly>
+    </Assemblies>
+  </Asset>
+</XnaContent>

@@ -18,7 +18,7 @@ open System
             member this.ID
                 with get() = (int) id
         [<AllowNullLiteral>] //allow null as a proper value
-        type Customer(height, waist, hips, chest)=
+        type Customer(name, email, height, waist, hips, chest)=
             member this.Height
                 with get() = height
             member this.Waist
@@ -35,18 +35,18 @@ open System
             let connectionStr = "Network Address=localhost;" + "Initial Catalog='kinectfashion';" + "Persist Security Info=no;" + "User Name='root';" + "Password='shAke87n'"
             let connection = new MySql.Data.MySqlClient.MySqlConnection(connectionStr)
             
-            member this.getCustomer email=
+            member this.getCustomer email password=
                 try
                     let mutable customer = null
                     connection.Open()
                     //get customer details
                     let transactionCustomer = connection.BeginTransaction()
-                    let SelectGarmentsInAvailableSizes = "SELECT height, waist, hips, chest FROM users WHERE email='"+ email + "'"
+                    let SelectGarmentsInAvailableSizes = "SELECT name, email, height, waist, hips, chest FROM users WHERE email LIKE BINARY '"+ email + "' AND password LIKE BINARY '" + password + "'"
                     let cmd = new MySqlCommand(SelectGarmentsInAvailableSizes, connection,transactionCustomer)
                     cmd.CommandTimeout <- 20
                     let rdr = cmd.ExecuteReader()
                     while (rdr.Read()) do
-                        customer <- new Store.Customer(rdr.[0], rdr.[1], rdr.[2], rdr.[3])
+                        customer <- new Store.Customer(rdr.[0], rdr.[1], rdr.[2], rdr.[3], rdr.[4], rdr.[5])
                         Diagnostics.Debug.WriteLine(rdr.[0].ToString() + rdr.[1].ToString() + rdr.[2].ToString() + rdr.[3].ToString())
                     rdr.Close()
                     transactionCustomer.Dispose()
@@ -54,7 +54,7 @@ open System
                 with 
                     | :? MySqlException as ex -> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
                                                   null)
-                    | ex-> (MessageBox.Show("Error connecting to database.\n\r" + ex.Message ) |> ignore
+                    | ex-> (MessageBox.Show(ex.Message ) |> ignore
                             null)
 
             member this.getGarments customer=
