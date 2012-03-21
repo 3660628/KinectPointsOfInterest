@@ -15,7 +15,7 @@ open System.IO
     //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
-    type BodyMeasurements(game, kinect:KinectPointsOfInterest.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
+    type BodyMeasurements(game, kinect:KinectPointsOfInterest.Kinect.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
         
         let phi = 1.61803399 //golden ratio
@@ -423,7 +423,7 @@ open System.IO
     //      leftSideBody:Body - the body view of the user's left side with joints and depth data
     //      backBody:Body - the back body view with joints and depth data
     //*************************************************************
-    type BodyMeasurementsPostProcess(game:Game, kinect:KinectPointsOfInterest.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
+    type BodyMeasurementsPostProcess(game:Game, kinect:KinectPointsOfInterest.Kinect.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
         
         let phi = 1.61803399 //golden ratio
@@ -532,8 +532,8 @@ open System.IO
                     if m < (min + j*bins) && int measurements.[i] >= (min + (j-1)*bins) then
                         count.[j-1] <- count.[j-1] + 1
             for i=1 to nBins do
-                binLables.[i-1] <- (min+(i-1)*bins).ToString() + "-" + (min + i*bins).ToString()
-            count
+                binLables.[i-1] <- ((min+(i-1)*bins) + (min + i*bins))/2
+            binLables.[Array.max count]
             
         
         //diagnostics
@@ -586,7 +586,7 @@ open System.IO
                     
                 i<-i+1
             measurement
-
+        
         //These members find the top and bottom most points of the depth image
         //The values they return are based on the 2D visualisation space i.e. in the range x=0-240, y=0-320
         member this.GetTopOfHead (body:Body) =
@@ -733,6 +733,18 @@ open System.IO
             waistMeasurement <- waistMeasurement + (measureSurfaceDistance backRow)
             waistMeasurement
 
+        member this.MeasureHips (body:Body, backBody:Body)=
+            let mutable hipsMeasurement =0.0
+            let frontBody = body
+            let backBody = backBody
+            let hipsStart = int hips * 320
+            let hipsEnd = hipsStart + 320
+            let frontRow = frontBody.DepthImg.[hipsStart..hipsEnd]
+            let backRow = backBody.DepthImg.[hipsStart..hipsEnd]
+            hipsMeasurement <- measureSurfaceDistance frontRow
+            hipsMeasurement <- hipsMeasurement + (measureSurfaceDistance backRow)
+            hipsMeasurement
+
         //top of screen to shoulders
         member this.MeasureToShoulders=
             shoulders <- frontBodys.[0].GetJoint("centerShoulder").Y
@@ -751,11 +763,10 @@ open System.IO
             measurementFont <- game.Content.Load<SpriteFont>("Font")
 
 
-        
-        override this.Update(gameTime)=
+        member this.GetMeasurements =
             let waistMeasures = Array.zeroCreate frontBodys.Length
-            if not pointsFound then
-                for i = 0 to frontBodys.Length-1 do
+            let hipsMeasures = Array.zeroCreate frontBodys.Length
+            for i = 0 to frontBodys.Length-1 do
                     this.GetTopOfHead frontBodys.[i] 
                     this.GetBottomOfFeet frontBodys.[i] 
                     this.GetWaist
@@ -766,11 +777,24 @@ open System.IO
                     sideBodyView <- this.ConvertDepthToTexture (leftSideBodys.[0])
                     
                     waistMeasures.[i] <- this.MeasureWaist (frontBodys.[i], backBodys.[i])
+                    hipsMeasures.[i] <- this.MeasureHips (frontBodys.[i], backBodys.[i])
                     //let waistRow = (avgBody frontBodys).DepthImg.[(int waist * 320)..((int waist * 320)+320)] //kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
                     //frontMeasurement <- measureSurfaceDistance frontBodys.[i]
-                pointsFound <- true
-            if waist > 0.0f && pointsFound then
-                let waistRow = kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+            (freqCount waistMeasures, freqCount hipsMeasures)
+            //(waistMeasures, hipsMeasures)
+
+        //member this.GetFinalMeasurements =
+            
+        //override this.Update(gameTime)=
+//            let mutable waistMeasures = [||]
+//            let mutable hipsMeasures = [||]
+//            if not pointsFound then
+//                let allMeasures = this.GetMeasurements
+//                waistMeasures <- fst allMeasures
+//                hipsMeasures <- snd allMeasures
+//                pointsFound <- true
+//            if waist > 0.0f && pointsFound then
+                //let waistRow = kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
                 //try
                   //  strm.Write (frontMeasurement.ToString() + "\r\n")
                 //with 
@@ -779,14 +803,14 @@ open System.IO
                 
                 //if measurementCount = 1000 then
                 //    strm.Close()
-                freqCount waistMeasures |> ignore
-                waistMax <- Array.max waistMeasures
-                waistMin <- Array.min waistMeasures
-                
-                if Array.sum waistRow > 0 then
-                    let range = Array.max waistRow - Array.min(Array.filter (fun elem -> if elem = 0 then false else true) waistRow)
-                    for i = 0 to 319 do  
-                        waistContour.[i] <- waistRow.[i] - (Array.max waistRow - range)
+               
+//                waistMax <- Array.max waistMeasures
+//                waistMin <- Array.min waistMeasures
+//                freqCount waistMeasures
+//                if Array.sum waistRow > 0 then
+//                    let range = Array.max waistRow - Array.min(Array.filter (fun elem -> if elem = 0 then false else true) waistRow)
+//                    for i = 0 to 319 do  
+//                        waistContour.[i] <- waistRow.[i] - (Array.max waistRow - range)
 
         member this.ConvertDepthToTexture (b:Body)=
             let img = new Texture2D(game.GraphicsDevice, 320, 240)

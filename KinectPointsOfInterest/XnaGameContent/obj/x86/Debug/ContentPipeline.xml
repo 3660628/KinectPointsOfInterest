@@ -98,7 +98,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
-      <Time>2012-02-17T12:37:49.7866879+00:00</Time>
+      <Time>2012-03-21T12:27:48.9938692+00:00</Time>
     </Item>
     <Item>
       <Source>nextButton.png</Source>
@@ -490,6 +490,15 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\MeasureInstructionsWomanSide800x600.xnb</Output>
       <Time>2012-02-25T18:08:15.4111157+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\MeasurementInstructions\GrayBackground800x600.png</Source>
+      <Name>UI\MeasurementInstructions\GrayBackground800x600</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\GrayBackground800x600.xnb</Output>
+      <Time>2012-02-25T19:24:52.5370563+00:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

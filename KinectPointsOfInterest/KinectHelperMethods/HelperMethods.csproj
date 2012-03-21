@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="KeyGrabber.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextInput.cs" />
   </ItemGroup>

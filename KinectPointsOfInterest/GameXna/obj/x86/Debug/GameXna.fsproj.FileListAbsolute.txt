@@ -61,3 +61,4 @@ C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\Kinec
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\MeasureInstructionsManSide800x600.xnb
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\MeasureInstructionsWomanFrontBack800x600.xnb
 C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\MeasureInstructionsWomanSide800x600.xnb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\GrayBackground800x600.xnb

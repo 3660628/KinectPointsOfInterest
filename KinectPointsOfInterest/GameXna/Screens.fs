@@ -10,22 +10,69 @@
     open VisualisationAssets
 
     module Instructions=
-        type InstructionStep(game:Game, image_name, instruction)=
+        type InstructionStep(game:Game, image_name, instruction, kinect)=
+            inherit GameComponent(game)
 
-            let background = new Image(game, "UI/MeasurementInstructions/GrayBackground800x600", new Vector2(112.0f, 84.0f))
-            do background.DrawOrder <- 10
-            do game.Components.Add(background)
-            let instructionImage = new Image(game, image_name, new Vector2(112.0f, 84.0f))
-            do instructionImage.DrawOrder <- 11
-            do game.Components.Add(instructionImage)
-            let messageLabel = new Label(game, instruction, new Vector2(512.0f, 600.0f))
-            do messageLabel.DrawOrder <- 12
-            do game.Components.Add(messageLabel)
+            let userCompliedEvent = new Event<_>()
 
+            let mutable complete = false
+            let mutable background =null
+            let mutable instructionImage =null
+            let mutable messageLabel =null
+
+            override this.Initialize() =
+                base.Initialize()
+                this.LoadContent()
+
+            member this.LoadContent()=
+                //build and add all components that make up the instruction screen to the game components
+                background <- new Button(game, "UI/MeasurementInstructions/GrayBackground800x600", "none", new Vector2(112.0f, 84.0f), kinect)
+                do background.DrawOrder <- 10
+                do game.Components.Add(background)
+                instructionImage <- new Image(game, image_name, new Vector2(112.0f, 84.0f))
+                do instructionImage.DrawOrder <- 11
+                do game.Components.Add(instructionImage)
+                messageLabel <- new Label(game, instruction, new Vector2(512.0f, 650.0f))
+                do messageLabel.DrawOrder <- 12
+                do game.Components.Add(messageLabel)
+
+            [<CLIEvent>]
+            member this.UserComplied = userCompliedEvent.Publish
+
+            member this.UserCompliedEvent
+                with get() = userCompliedEvent
+            //remove all game components associated with this screen
             member this.DestroyScene=
-                do game.Components.Add(background) |> ignore
-                do game.Components.Add(instructionImage) |> ignore
-                do game.Components.Add(messageLabel) |> ignore
+                do game.Components.Remove(background) |> ignore
+                do game.Components.Remove(instructionImage) |> ignore
+                do game.Components.Remove(messageLabel) |> ignore
+
+            member this.Complete
+                with get() = complete
+                and set(c) = complete <- c
+
+            override this.Update(gameTime)=
+                base.Update(gameTime)
+
+        type MeasureFrontInstructionStep(game:Game, image_name, instruction, kinect)=
+            inherit InstructionStep(game, image_name, instruction, kinect)
+            
+            override this.Update(gameTime)=
+                try
+                    if kinect.GetPose().FrontMeasurePose then
+                        base.UserCompliedEvent.Trigger()
+                with
+                    | NoUserTracked -> ()
+
+        type MeasureSideInstructionStep(game:Game, image_name, instruction, kinect)=
+            inherit InstructionStep(game, image_name, instruction, kinect)
+            
+            override this.Update(gameTime)=
+                try
+                    if kinect.GetPose().SideMeasurePose then
+                        base.UserCompliedEvent.Trigger()
+                with
+                    | NoUserTracked -> ()
 
     module Screens=
 
@@ -48,10 +95,11 @@
                 backgroundFooter.DrawOrder <- 10
                 backgroundHeader.DrawOrder <- 10
                 cursor.DrawOrder <- 99
+                spriteBatch <- new SpriteBatch(this.Game.GraphicsDevice)
                 base.Initialize()
                  
             override this.LoadContent()=
-                spriteBatch <- new SpriteBatch(this.Game.GraphicsDevice)
+                
                 background <- game.Content.Load<Texture2D>("UI/background")
                 base.LoadContent()
 
@@ -92,7 +140,7 @@
 
             let mutable sprite : Texture2D = null
 
-            let kinect = new KinectMeasure(game)
+            let kinect = new Kinect.KinectMeasure(game)
     
             let noOfSamples = 200
             let mutable timer = 10000.0f //start timer at 10 seconds
@@ -108,9 +156,15 @@
             let mutable beepSound:SoundEffect = null
 
             let mutable nextButton = new TextButton(game, "nextButton", "no_shadow", "Next", new Vector2( 300.0f, 300.0f), base.KinectUI)
-
-            let mutable instructions = new Instructions.InstructionStep(game, "UI/MeasureInstructionManFront800x600", "Stand still with your arms out, facing the Kinect sensor")
-
+            
+            let mutable frontReady, sideReady, backReady = false, false, false
+            let mutable frontInstructions = new Instructions.MeasureFrontInstructionStep(game, "UI/MeasurementInstructions/MeasureInstructionsManFrontBack800x600", "Stand still with your arms out, facing the Kinect sensor", kinectUI)
+            do frontInstructions.UserComplied.Add(fun args -> frontReady <- true)
+            let mutable sideInstructions = new Instructions.MeasureSideInstructionStep(game, "UI/MeasurementInstructions/MeasureInstructionsManSide800x600", "Side", kinectUI)
+            do sideInstructions.UserComplied.Add(fun args -> sideReady <- true)
+            let mutable backInstructions = new Instructions.MeasureFrontInstructionStep(game, "UI/MeasurementInstructions/MeasureInstructionsManFrontBack800x600", "Back", kinectUI)
+            do backInstructions.UserComplied.Add(fun args -> backReady <- true)
+            
             member this.ClickOption(mouseClickPos:Vector2)=
                 match mouseClickPos with
                     | x when base.InBounds(x, nextButton) -> event.Trigger(new ChangeScreenEventArgs(this, new VisualisationScreen(this.Game, sex, 0, 0, 0, 0, event, kinectUI))) //clicked on next button
@@ -119,6 +173,8 @@
             override this.Initialize()=
                 game.Components.Add(kinect)
                 game.Components.Add(nextButton)
+                game.Components.Add(frontInstructions)
+                base.Initialize()
 
             override this.LoadContent() =
                 sprite <- this.Game.Content.Load<Texture2D>("Sprite")
@@ -137,26 +193,43 @@
                 //KINECT TAKING THE MEASUREMENTS
                 timer <- timer - float32 gameTime.ElapsedGameTime.TotalMilliseconds
                 
-                if timer <= -10000.0f && backBody.[0] = null then
+                if backReady && backBody.[0] = null then
+                    backInstructions.DestroyScene
+                    game.Components.Remove(backInstructions) |> ignore
+
                     clickSound.Play() |> ignore
                     for i = 0 to noOfSamples-1 do
                         backBody.[i] <- kinect.CaptureBody
                     beepSound.Play() |> ignore
-                    instructions <- new Instructions.InstructionStep(game, "UI/MeasureInstructionManFront800x600", "Measurement Complete!")
-                else if timer <= -5000.0f && sideBody.[0] = null then
+                    backReady <-true
+                    
+                else if sideReady && sideBody.[0] = null then
+                    sideInstructions.DestroyScene
+                    game.Components.Remove(sideInstructions) |> ignore
+
                     clickSound.Play() |> ignore
                     for i = 0 to noOfSamples-1 do
                         sideBody.[i] <- kinect.CaptureBody
                     beepSound.Play() |> ignore
-                else if timer <= 0.0f && frontBody.[0] = null then
+                    
+                    game.Components.Add(backInstructions)
+
+                else if frontReady && frontBody.[0] = null then
+                    frontInstructions.DestroyScene
+                    game.Components.Remove(frontInstructions) |> ignore
+
                     clickSound.Play() |> ignore
                     for i = 0 to noOfSamples-1 do
                         frontBody.[i] <- kinect.CaptureBody
                     beepSound.Play() |> ignore
                     
+                    game.Components.Add(sideInstructions)
+                    
                 if frontBody.[noOfSamples-1] <> null && backBody.[noOfSamples-1] <> null && sideBody.[noOfSamples-1] <> null && not finished then
                     //game.Components.Add(new BodyMeasurements(this, kinect, frontBody, sideBody, backBody))
-                    this.Game.Components.Add(new BodyMeasurementsPostProcess(this.Game, kinect, frontBody, sideBody, backBody))
+                    //this.Game.Components.Add(new BodyMeasurementsPostProcess(this.Game, kinect, frontBody, sideBody, backBody))
+                    let processor = new BodyMeasurementsPostProcess(this.Game, kinect, frontBody, sideBody, backBody)
+                    let (waist, hips) = processor.GetMeasurements
                     finished <- true
                 base.Update gameTime
 
@@ -234,7 +307,7 @@
         and RecentUsersScreen(game:Game, event:Event<ChangeScreenEventArgs>, kinect) as this=
             inherit Menu(game, kinect)
 
-            let mutable recentUsers = new MenuItemList(game)
+            let mutable recentUsers = new MenuItemList(game, kinect)
             
             let userClickedHandler (args:LoginEventArgs) =
                 event.Trigger(new ChangeScreenEventArgs(this, new LoginScreen(this.Game, args.Email.ToString(), event, kinect)))
@@ -375,7 +448,7 @@
 
             let dbAccess = new Database.DatabaseAccess()
 
-            let mutable garmentItems = new MenuItemList(game)
+            let mutable garmentItems = new MenuItemList(game, kinect)
             let mutable femaleButton = null
             let event = e
 
@@ -386,7 +459,7 @@
                 let garmentList = dbAccess.getGarments null
                                   |> Seq.distinctBy (fun (x:Store.Garment)-> x.Name) //remove duplicate items (e.g. size variations)
                 let startYPos = System.Math.Min(((game.GraphicsDevice.Viewport.Height / 2) - ((Seq.length(garmentList) + 1)*110)/2), 10)
-                garmentItems <- new MenuItemList(game)
+                garmentItems <- new MenuItemList(game, kinect)
                 let kinect = base.KinectUI
                 garmentList
                 |> Seq.iter (fun (x:Store.Garment) -> (let newGarment = new GarmentItem(game, x, new Vector2(100.0f,(((float32)x.ID * 110.0f) + float32 startYPos)), kinect) //make a new garment Object

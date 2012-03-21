@@ -11,6 +11,8 @@ open System.Collections
 open System.Net
 open System.IO
 
+open Kinect
+
     module MenuItems=
 
 
@@ -103,7 +105,7 @@ open System.IO
                             if mouse.Y < (base.Sprite.Bounds.Bottom  + (int base.Position.Y))
                             && mouse.Y > (base.Sprite.Bounds.Top + (int base.Position.Y)) then 
                                 buttonClickedEvent.Trigger(new ButtonClickedEventArgs(this))
-                    if kinect.GetState().RightButton = ButtonState.Pressed && not kinectRightClick then
+                    if kinect.GetState().RightButton = ButtonState.Pressed && not kinectRightClick && not (kinect.GetState().LeftButton = ButtonState.Pressed) then
                         if kinect.GetState().RightHandPosition.X < float32 base.Sprite.Bounds.Right + (base.Position.X) 
                         && kinect.GetState().RightHandPosition.X > float32 base.Sprite.Bounds.Left  + (base.Position.X) then 
                             if kinect.GetState().RightHandPosition.Y < float32 base.Sprite.Bounds.Bottom  + (base.Position.Y)
@@ -208,8 +210,23 @@ open System.IO
                     
                     let k = args.Key
                     match k with
-                        | x when x.Equals(Keys.Space) -> text <- text + " "
-                                                         carrotPosition <- carrotPosition + 1
+                        | Keys.Space -> text <- text.Substring(0,carrotPosition) + " " + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                        carrotPosition <- carrotPosition + 1
+                        | Keys.OemMinus -> if caps then
+                                                text <-text.Substring(0,carrotPosition) + "_" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                           else
+                                                text <-text.Substring(0,carrotPosition) + "-" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                           carrotPosition <- carrotPosition + 1
+                        | Keys.OemPlus -> if caps then
+                                                text <-text.Substring(0,carrotPosition) + "+" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                          else
+                                                text <-text.Substring(0,carrotPosition) + "=" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                          carrotPosition <- carrotPosition + 1
+                        | Keys.OemQuotes -> if caps then
+                                                text <-text.Substring(0,carrotPosition) + "@" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                            else
+                                                text <-text.Substring(0,carrotPosition) + "'" + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                            carrotPosition <- carrotPosition + 1
                         | x when x.Equals(Keys.Back) -> carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
                                                         if text.Length > 0 then text <- text.Remove(carrotPosition,1)
                         | x when x.Equals(Keys.Left) -> carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
@@ -218,8 +235,23 @@ open System.IO
                         | Keys.D0 | Keys.D1 | Keys.D2 | Keys.D3 | Keys.D4 | Keys.D5 | Keys.D6 | Keys.D7 | Keys.D8 | Keys.D9 
                             ->  let valAsString = System.Text.RegularExpressions.Regex.Match(args.Key.ToString(), @"\d+").Value
                                 let number = snd(System.Int32.TryParse(valAsString))
-                                text <- text.Substring(0,carrotPosition) + number.ToString() + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                if not caps then
+                                    text <- text.Substring(0,carrotPosition) + number.ToString() + text.Substring(carrotPosition, text.Length - carrotPosition)
+                                else
+                                    text <- text.Substring(0,carrotPosition) + match number with 
+                                                                                    | 1 -> "!"
+                                                                                    | 2 -> "\""
+                                                                                    | 3 -> "£"
+                                                                                    | 4 -> "$"
+                                                                                    | 5 -> "%"
+                                                                                    | 6 -> "^"
+                                                                                    | 7 -> "&"
+                                                                                    | 8 -> "*"
+                                                                                    | 9 -> "("
+                                                                                    | 0 -> ")" 
+                                                                                    + text.Substring(carrotPosition, text.Length - carrotPosition)
                                 carrotPosition <- carrotPosition + 1
+                        
                         | _ -> text <- text.Substring(0,carrotPosition) + (if caps then args.Key.ToString() else args.Key.ToString().ToLower()) + text.Substring(carrotPosition, text.Length - carrotPosition)
                                carrotPosition <- carrotPosition + 1
             
@@ -386,7 +418,7 @@ open System.IO
             member this.Sender = sender
             member this.Garment = garment  
         
-        type MenuItemList(game:Game)= //A simple container to hold a list of items that need drawn
+        type MenuItemList(game:Game, kinect:KinectCursor)= //A simple container to hold a list of items that need drawn
             inherit DrawableGameComponent(game)
             
             //let mutable list:List<GarmentItem> = []
@@ -394,6 +426,7 @@ open System.IO
             
             let mutable position = Vector2.Zero
             let mutable lastMouseWheel = Mouse.GetState().ScrollWheelValue
+            let mutable lastLeftHandPosition = kinect.GetState().RightHandPosition.Y
 
             member this.List
                 with get() = list
@@ -412,15 +445,19 @@ open System.IO
 
             override this.Update(gameTime)=
                 let dScrollWheel = (float32 (Mouse.GetState().ScrollWheelValue - lastMouseWheel))/10.0f
-                let dPosition = new Vector2(0.0f, dScrollWheel)
-                if (position.Y + dPosition.Y + this.Height >= float32(game.GraphicsDevice.Viewport.Height - 200) && dScrollWheel < 0.0f) || (position.Y + dPosition.Y <= 0.0f && dScrollWheel > 0.0f) then //check if the list can scroll any further 
+                let dKinectScroll = if kinect.GetState().LeftButton = ButtonState.Pressed then (kinect.GetState().LeftHandPosition.Y - lastLeftHandPosition) /10.0f else 0.0f
+                let dPosition = new Vector2(0.0f, dScrollWheel+dKinectScroll)
+                
+                if (position.Y + dPosition.Y + this.Height >= float32(game.GraphicsDevice.Viewport.Height - 200) && (dScrollWheel < 0.0f || dKinectScroll < 0.0f)) || (position.Y + dPosition.Y <= 0.0f && (dScrollWheel > 0.0f || dKinectScroll > 0.0f)) then //check if the list can scroll any further 
                     position <- position + dPosition
                     for x in list do
                         x.Position <- x.Position + dPosition
+
                 for x in list do
                     x.Update gameTime //always x.Update to capture clicks    
                 base.Update(gameTime)
                 lastMouseWheel <- Mouse.GetState().ScrollWheelValue
+                lastLeftHandPosition <- kinect.GetState().RightHandPosition.Y
 
             override this.Draw(gameTime)=
                 for x in list do
@@ -538,7 +575,7 @@ open System.IO
                         if Mouse.GetState().Y < base.Sprite.Bounds.Bottom  + (int base.Position.Y)
                         && Mouse.GetState().Y > base.Sprite.Bounds.Top + (int base.Position.Y) then 
                             buttonClickedEvent.Trigger(new LoginEventArgs(this, email))
-                if kinect.GetState().RightButton = ButtonState.Pressed && not kinectRightClick then
+                if kinect.GetState().RightButton = ButtonState.Pressed && not kinectRightClick && not (kinect.GetState().LeftButton = ButtonState.Pressed) then
                     if kinect.GetState().RightHandPosition.X < float32 base.Sprite.Bounds.Right + (base.Position.X) 
                     && kinect.GetState().RightHandPosition.X > float32 base.Sprite.Bounds.Left  + (base.Position.X) then 
                         if kinect.GetState().RightHandPosition.Y < float32 base.Sprite.Bounds.Bottom  + (base.Position.Y)

@@ -23,7 +23,7 @@
 
             let mutable spriteBatch : SpriteBatch = null
 
-            let kinectUI = new KinectCursor(this)
+            let kinectUI = new Kinect.KinectCursor(this)
             do kinectUI.DrawOrder <- 99
             
 
