@@ -500,6 +500,15 @@
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\MeasurementInstructions\GrayBackground800x600.xnb</Output>
       <Time>2012-02-25T19:24:52.5370563+00:00</Time>
     </Item>
+    <Item>
+      <Source>BigText.spritefont</Source>
+      <Name>BigText</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BigText.xnb</Output>
+      <Time>2012-03-21T15:15:15.2841339+00:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>

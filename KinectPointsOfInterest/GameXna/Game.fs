@@ -5,7 +5,7 @@
         open Microsoft.Xna.Framework.Graphics
         open Microsoft.Xna.Framework.Audio
 
-        open Microsoft.Research.Kinect.Nui
+        open Microsoft.Kinect
         open KinectHelperMethods
 
         open System
@@ -29,6 +29,7 @@
 
             let changeScreenEvent = new Event<ChangeScreenEventArgs>()
             let login = new RecentUsersScreen(this, changeScreenEvent, kinectUI)
+            //let login = new KinectTextInputScreen(this, null, changeScreenEvent, null, kinectUI)
             //do login.KinectUI <- kinectUI //pass the kinectUI object to the first screen
             //let login = new StoreScreen(this, changeScreenEvent)
             //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent)

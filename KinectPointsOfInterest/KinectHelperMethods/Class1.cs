@@ -3,51 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Microsoft.Research.Kinect.Nui;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+using Microsoft.Kinect;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics ;
 
-//*****************************
-//Code adapted from Jason Mithell's Kinect SDK extension methods
-//http://jason-mitchell.com/2011/06/27/kinect-sdk-extension-methods/
-//*****************************
 
 namespace KinectHelperMethods
 {
+    //*****************************
+    //Code adapted from Jason Mithell's Kinect SDK extension methods
+    //http://jason-mitchell.com/kinect-sdk-extension-methods/
+    //*****************************
     public static class KinectExtensions
     {
         private static Texture2D texture = null;
         private static Color[] colorData = null;
  
-        public static Texture2D ToTexture2D(this PlanarImage image, GraphicsDevice graphicsDevice)
+        public static Vector2 GetScreenPosition(this Joint joint, KinectSensor kinectRuntime, int screenWidth, int screenHeight)
         {
-            if(texture == null || colorData == null)
-            {
-                texture = 
-                    new Texture2D(graphicsDevice, image.Width, image.Height, false, SurfaceFormat.Color);
-                colorData = new Color[image.Width * image.Height];
-            }
- 
-            int index = 0;
-            for (int y = 0; y < image.Height; y++)
-            {
-                for (int x = 0; x < image.Width; x++, index += image.BytesPerPixel)
-                    colorData[y * image.Width + x] = 
-                        new Color(image.Bits[index + 2], image.Bits[index + 1], image.Bits[index + 0]);
-            }
- 
-            texture.SetData(colorData);
-            return texture;
-        }
- 
-        public static Vector2 GetScreenPosition(this Joint joint, Runtime kinectRuntime, int screenWidth, int screenHeight)
-        {
-            float depthX;
-            float depthY;
- 
-            kinectRuntime.SkeletonEngine.SkeletonToDepthImage(joint.Position, out depthX, out depthY);
-            depthX = Math.Max(0, Math.Min(depthX * screenWidth, screenWidth));  //convert to 320, 240 space
-            depthY = Math.Max(0, Math.Min(depthY * screenHeight, screenHeight));  //convert to 320, 240 space
+            //float depthX;
+            //float depthY;
+
+            DepthImagePoint DIPoint = kinectRuntime.MapSkeletonPointToDepth(joint.Position, DepthImageFormat.Resolution320x240Fps30);//out depthX, out depthY);
+            
+            //depthX = Math.Max(0, Math.Min(depthX * screenWidth, screenWidth));  //convert to 320, 240 space
+            //depthY = Math.Max(0, Math.Min(depthY * screenHeight, screenHeight));  //convert to 320, 240 space
  
             //int colorX;
             //int colorY;
@@ -56,7 +39,64 @@ namespace KinectHelperMethods
  
             // map back to skeleton.Width & skeleton.Height
             //return new Vector2(screenWidth * colorX / 320.0f, screenHeight * colorY / 240f);
-            return new Vector2(depthX, depthY);
+            return new Vector2(DIPoint.X, DIPoint.Y);
+        }
+    }
+
+
+    //*****************************
+    //Code adapted from Raccoonacoon's Getting True Keyboard Input into your XNA Games
+    //http://dream-forever.net/Blog/2011/08/29/getting-true-keyboard-input-into-your-xna-games/
+    //*****************************
+    public class KeyGrabber
+    {
+        public class KeyFilter : IMessageFilter
+        {
+            public bool PreFilterMessage(ref Message m)
+            {
+                /*
+                    These are the message constants we will be watching for.
+                */
+                const int WM_KEYDOWN = 0x0100;
+                const int WCHAR_EVENT = 0x0102;
+
+                if (m.Msg == WM_KEYDOWN)
+                {
+                    /*
+                        The TranslateMessage function requires a pointer to be passed to it.
+                        Since C# doesn't typically use pointers, we have to make use of the Marshal
+                        class to store the Message into a pointer. We can then pass this pointer
+                        over to the native function.
+                    */
+                    IntPtr pointer = Marshal.AllocHGlobal(Marshal.SizeOf(m));
+                    Marshal.StructureToPtr(m, pointer, true);
+                    TranslateMessage(pointer);
+                }
+                else if (m.Msg == WCHAR_EVENT)
+                {
+                    //The WParam parameter contains the true character value
+                    //we are after. Print this out to the screen and call the
+                    //InboundCharEvent so any events hooked up to this will be
+                    //notifed that there is a char ready to be processed.
+                    char trueCharacter = (char)m.WParam;
+                    Console.WriteLine(trueCharacter);
+
+                    if (InboundCharEvent != null)
+                        InboundCharEvent(trueCharacter);
+                }
+
+                //Returning false allows the message to continue to the next filter or control.
+                return false;
+            }
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+            public static extern bool TranslateMessage(IntPtr message);
+        }
+
+        public static event Action<char> InboundCharEvent;
+        static KeyGrabber()
+        {
+            Application.AddMessageFilter(new KeyFilter());
         }
     }
 }

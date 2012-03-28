@@ -18,6 +18,9 @@ open System.IO
     type BodyMeasurements(game, kinect:KinectPointsOfInterest.Kinect.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
         
+        let DEPTH_WIDTH = 320
+        let DEPTH_HEIGHT = 240
+
         let phi = 1.61803399 //golden ratio
         
         //points of interest
@@ -36,7 +39,7 @@ open System.IO
         
         let smooth (avg:int[])=
             for y = 0 to 238 do
-                let row = avg.[y*320..y*320+320]    
+                let row = avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+DEPTH_WIDTH]    
                 for e=1 to row.Length-2 do
                     let range = Math.Sqrt(Math.Pow(float(row.[e-1] - row.[e+1]), 2.0))
                     match row.[e] with
@@ -46,24 +49,24 @@ open System.IO
                     | x when x > row.[e-1] + int range -> (row.[e] <- row.[e-1] + (int range)/2)
                     | x when x < row.[e-1] - int range -> (row.[e] <- row.[e-1] - (int range)/2)
                     | _ -> () //if the point is in the correct range then do nothing to it.
-                avg.[y*320..y*320+320] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+DEPTH_WIDTH] <- row
             avg
 
         let movingAvg (avg:int[]) n=
             for y=0 to 238 do
-                let row = avg.[y*320..(y*320)+319]
+                let row = avg.[y*DEPTH_WIDTH..(y*DEPTH_WIDTH)+319]
                 for i = n to (row.Length - n) do
                     if row.[i] <> 0 && row.[i-1] <> 0 && row.[i+1] <> 0 then
                         for d = 1 to n do 
                             row.[i] <- row.[i] + row.[i-d] + row.[i+d]         
                         row.[i] <- int ((float row.[i]) / float (n * 2 + 1))
-                avg.[y*320..y*320+319] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+319] <- row
             avg
 
         //std devaition per row.
         let stdDeviation (avg:int[]) =
             for i = 0 to 239 do
-                let mutable row = avg.[i*320..(i*320)+319]
+                let mutable row = avg.[i*DEPTH_WIDTH..(i*DEPTH_WIDTH)+319]
                 let rowWithout0s = row |> Array.filter (fun elem -> if elem = 0 then false else true) //filter out the 0s
                 let mutable averageRawDepth = 0.0
                 if rowWithout0s.Length>0 then 
@@ -75,27 +78,27 @@ open System.IO
                 let stdDeviationMax = averageRawDepth + (stdDeviationRange / 2.0)
                 let stdDeviationMin = averageRawDepth - (stdDeviationRange / 2.0)
                 row <- row |> Array.map(fun a -> (if a > int stdDeviationMin && a < int stdDeviationMax then a else 0)) //sould average and threshhold values.
-                avg.[i*320..(i*320)+319] <- row
+                avg.[i*DEPTH_WIDTH..(i*DEPTH_WIDTH)+319] <- row
             avg
             
 
         let removeSinglePointOutliers (avg:int[])=
             for y=0 to 238 do
-                let row = avg.[y*320..(y*320)+319]
+                let row = avg.[y*DEPTH_WIDTH..(y*DEPTH_WIDTH)+319]
                 for i = 1 to (row.Length - 2) do
                     if row.[i-1] = 0 && row.[i+1] =0 then
                       row.[i] <- 0         
-                avg.[y*320..y*320+319] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+319] <- row
             avg
 
 
         //averages the body from a set of body objects
         let avgBody (bodies:Body[]) =
-            let mutable avg = Array.zeroCreate (320*240)
+            let mutable avg = Array.zeroCreate (DEPTH_WIDTH*DEPTH_HEIGHT)
             for b in bodies do
                 for y = 0 to 239 do
                     for x = 0 to 319 do
-                         let n = y * 320 + x
+                         let n = y * DEPTH_WIDTH + x
                          avg.[n] <- avg.[n] + b.DepthImg.[n]
             avg <- avg |> Array.map(fun a -> (a / bodies.Length)) //average each pixel by dividing by the number of samples taken
             avg <- removeSinglePointOutliers avg
@@ -118,7 +121,7 @@ open System.IO
         let mutable flatFront = 0
         let mutable waistMax = 0.0
         let mutable waistMin = Double.MaxValue
-        let waistContour:int[] = Array.zeroCreate 320
+        let waistContour:int[] = Array.zeroCreate DEPTH_WIDTH
         let fn:string = "frontWaist.cvs"
         let strm = new StreamWriter( fn,  false)
         let mutable measurementCount = 0
@@ -162,7 +165,7 @@ open System.IO
             measurement
 
         //These members find the top and bottom most points of the depth image
-        //The values they return are based on the 2D visualisation space i.e. in the range x=0-240, y=0-320
+        //The values they return are based on the 2D visualisation space i.e. in the range x=0-DEPTH_HEIGHT, y=0-DEPTH_WIDTH
         member this.GetTopOfHead =
             let frontBody = avgBody frontBodys
             let depthImage = frontBody.DepthImg
@@ -172,7 +175,7 @@ open System.IO
             while y < 239 && TOH.Equals(Unchecked.defaultof<Vector3>) do
                 let mutable x = 0
                 while x < 319 && TOH.Equals(Unchecked.defaultof<Vector3>) do
-                    let arrayPosition = y * 320 + x  
+                    let arrayPosition = y * DEPTH_WIDTH + x  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
                         let coordinates = new Vector3(float32 x, float32 y, float32 depth)
@@ -199,10 +202,10 @@ open System.IO
             while y < 239 && BOF.Equals(Unchecked.defaultof<Vector3>) do
                 let mutable x = 0
                 while x < 319 && BOF.Equals(Unchecked.defaultof<Vector3>) do
-                    let arrayPosition = 76799 - (y * 320 + x)  
+                    let arrayPosition = 76799 - (y * DEPTH_WIDTH + x)  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
-                        let coordinates = new Vector3(320.0f - float32 x, 240.0f - float32 y, float32 depth)
+                        let coordinates = new Vector3(float32 DEPTH_WIDTH - float32 x, float32 DEPTH_HEIGHT - float32 y, float32 depth)
                         BOF <- coordinates
                         System.Diagnostics.Debug.WriteLine("BottomOfFeet=" + BOF.ToString())
                     x <- x + 1
@@ -219,7 +222,7 @@ open System.IO
             
             let mutable y = int (backBody.GetJoint("centerHip").Y) //start at hip bone as hips are below this
             while y < (int kneeL.Y) do //finish at knee as hips are above knee
-                let pointsOnLine =  depthImage.[(y * 240)..((y * 240)+320)]
+                let pointsOnLine =  depthImage.[(y * DEPTH_HEIGHT)..((y * DEPTH_HEIGHT)+DEPTH_WIDTH)]
                 let currentFoundWidth = measureSurfaceDistance pointsOnLine
                 if currentFoundWidth > hipWidth then
                     hipWidth <- currentFoundWidth
@@ -239,7 +242,7 @@ open System.IO
                 let mutable x = 0
                 let mutable currentFoundWidth = 0
                 while x < int footL.X do
-                    let arrayPosition = (y * 320 + x)  
+                    let arrayPosition = (y * DEPTH_WIDTH + x)  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
                         currentFoundWidth <- currentFoundWidth + 1
@@ -256,11 +259,11 @@ open System.IO
             let depthImage = frontBody.DepthImg
             let mutable lastWidth = 0
             let mutable y = (int shoulderC)
-            while y <  240 do //finish at knee as hips are below knee
+            while y <  DEPTH_HEIGHT do //finish at knee as hips are below knee
                     let mutable x = 0
                     let mutable currentFoundWidth = 0
-                    while x < 320 do
-                        let arrayPosition = (y * 320 + x)  
+                    while x < DEPTH_WIDTH do
+                        let arrayPosition = (y * DEPTH_WIDTH + x)  
                         let depth = depthImage.[arrayPosition]
                         if depth > 0 then
                             currentFoundWidth <- currentFoundWidth + 1
@@ -298,8 +301,8 @@ open System.IO
         member this.MeasureWaist=
             let frontBody = avgBody frontBodys
             let backBody = avgBody backBodys
-            let waistStart = int waist * 320
-            let waistEnd = waistStart + 320
+            let waistStart = int waist * DEPTH_WIDTH
+            let waistEnd = waistStart + DEPTH_WIDTH
             let frontRow = frontBody.DepthImg.[waistStart..waistEnd]
             let backRow = backBody.DepthImg.[waistStart..waistEnd]
             waistMeasurement <- measureSurfaceDistance frontRow
@@ -336,10 +339,10 @@ open System.IO
                 sideBodyView <- this.ConvertDepthToTexture (avgBody leftSideBodys)
                 this.MeasureWaist
                 pointsFound <- true
-                let waistRow = (avgBody frontBodys).DepthImg.[(int waist * 320)..((int waist * 320)+320)] //kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+                let waistRow = (avgBody frontBodys).DepthImg.[(int waist * DEPTH_WIDTH)..((int waist * DEPTH_WIDTH)+DEPTH_WIDTH)] //kinect.LiveDepthData.[(int waist * DEPTH_WIDTH)..((int waist * 320)+320)]
                 frontMeasurement <- measureSurfaceDistance waistRow
             if waist > 0.0f && pointsFound then
-                let waistRow = kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+                let waistRow = kinect.LiveDepthData.[(int waist * DEPTH_WIDTH)..((int waist * DEPTH_WIDTH)+DEPTH_WIDTH)]
 //                let flatFrontArray = Array.map (fun a ->
 //                                                match a with
 //                                                | 0 -> None
@@ -367,8 +370,8 @@ open System.IO
                         waistContour.[i] <- waistRow.[i] - (Array.max waistRow - range)
 
         member this.ConvertDepthToTexture (b:Body)=
-            let img = new Texture2D(game.GraphicsDevice, 320, 240)
-            let DepthColor = Array.create (320 * 240) (new Color(255,255,255))
+            let img = new Texture2D(game.GraphicsDevice, DEPTH_WIDTH, DEPTH_HEIGHT)
+            let DepthColor = Array.create (DEPTH_WIDTH * DEPTH_HEIGHT) (new Color(255,255,255))
 
             let maxDist = 4000
             let minDist = 850
@@ -376,12 +379,12 @@ open System.IO
 
             for y = 0 to 239 do
                 for x = 0 to 319 do
-                    let n = (y * 320 + x)
+                    let n = (y * DEPTH_WIDTH + x)
                     let distance = b.DepthImg.[n]
                     //change distance to colour
                     let intensity = ((255 * Math.Max(int(distance-minDist),0)/distOffset)) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
                     let colour = new Color(intensity, intensity, intensity)
-                    DepthColor.[y * 320 + x] <- colour
+                    DepthColor.[y * DEPTH_WIDTH + x] <- colour
             img.SetData(DepthColor)
             img
 
@@ -390,23 +393,23 @@ open System.IO
             spriteBatch.Begin()
             //Draw the points of interest lines
             if frontBodyView <> null then
-                spriteBatch.Draw(frontBodyView, new Vector2(320.0f, 0.0f), Color.White)//front view
+                spriteBatch.Draw(frontBodyView, new Vector2(float32 DEPTH_WIDTH, 0.0f), Color.White)//front view
             if sideBodyView <> null then
                 spriteBatch.Draw(sideBodyView, new Vector2(640.0f, 0.0f), Color.White)//left side view
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, waist), Color.White)//Waist
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, topOfHead), Color.White)//Top of Head
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, bottomOfFeet), Color.White)//Bottom of feet
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, shoulders), Color.White)//Shoulders
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, hips), Color.White)//Hips
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, knees), Color.White)//Knees
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, waist), Color.White)//Waist
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, topOfHead), Color.White)//Top of Head
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, bottomOfFeet), Color.White)//Bottom of feet
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, shoulders), Color.White)//Shoulders
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, hips), Color.White)//Hips
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, knees), Color.White)//Knees
 
-            spriteBatch.DrawString(measurementFont, "Waist:"+waistMeasurement.ToString(), new Vector2(0.0f, 320.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "Waist:"+waistMeasurement.ToString(), new Vector2(0.0f, float32 DEPTH_WIDTH), Color.White);
             spriteBatch.DrawString(measurementFont, "Front@Waist:"+frontMeasurement.ToString(), new Vector2(0.0f, 340.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "Front@Waist(Flat):"+flatFront.ToString(), new Vector2(0.0f, 360.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "MaxFront@Waist:"+waistMax.ToString(), new Vector2(0.0f, 380.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "MinFront@Waist:"+waistMin.ToString(), new Vector2(0.0f, 400.0f), Color.White);
 
-            let visOffset = new Vector2(400.0f, 240.0f)
+            let visOffset = new Vector2(400.0f, float32 DEPTH_HEIGHT)
             for i = 0 to 319 do
                 let point = waistContour.[i]
                 if point > 0 then
@@ -425,7 +428,8 @@ open System.IO
     //*************************************************************
     type BodyMeasurementsPostProcess(game:Game, kinect:KinectPointsOfInterest.Kinect.KinectMeasure, frontBodys:Body[], leftSideBodys:Body[], backBodys:Body[])=
         inherit DrawableGameComponent(game)
-        
+        let DEPTH_WIDTH = 320
+        let DEPTH_HEIGHT = 320
         let phi = 1.61803399 //golden ratio
         
         //points of interest
@@ -444,7 +448,7 @@ open System.IO
         
         let smooth (avg:int[])=
             for y = 0 to 238 do
-                let row = avg.[y*320..y*320+320]    
+                let row = avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+DEPTH_WIDTH]    
                 for e=1 to row.Length-2 do
                     let range = Math.Sqrt(Math.Pow(float(row.[e-1] - row.[e+1]), 2.0))
                     match row.[e] with
@@ -454,24 +458,24 @@ open System.IO
                     | x when x > row.[e-1] + int range -> (row.[e] <- row.[e-1] + (int range)/2)
                     | x when x < row.[e-1] - int range -> (row.[e] <- row.[e-1] - (int range)/2)
                     | _ -> () //if the point is in the correct range then do nothing to it.
-                avg.[y*320..y*320+320] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+DEPTH_WIDTH] <- row
             avg
 
         let movingAvg (avg:int[]) n=
             for y=0 to 238 do
-                let row = avg.[y*320..(y*320)+319]
+                let row = avg.[y*DEPTH_WIDTH..(y*DEPTH_WIDTH)+319]
                 for i = n to (row.Length - n) do
                     if row.[i] <> 0 && row.[i-1] <> 0 && row.[i+1] <> 0 then
                         for d = 1 to n do 
                             row.[i] <- row.[i] + row.[i-d] + row.[i+d]         
                         row.[i] <- int ((float row.[i]) / float (n * 2 + 1))
-                avg.[y*320..y*320+319] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+319] <- row
             avg
 
         //std devaition per row.
         let stdDeviation (avg:int[]) =
             for i = 0 to 239 do
-                let mutable row = avg.[i*320..(i*320)+319]
+                let mutable row = avg.[i*DEPTH_WIDTH..(i*DEPTH_WIDTH)+319]
                 let rowWithout0s = row |> Array.filter (fun elem -> if elem = 0 then false else true) //filter out the 0s
                 let mutable averageRawDepth = 0.0
                 if rowWithout0s.Length>0 then 
@@ -483,27 +487,27 @@ open System.IO
                 let stdDeviationMax = averageRawDepth + (stdDeviationRange / 2.0)
                 let stdDeviationMin = averageRawDepth - (stdDeviationRange / 2.0)
                 row <- row |> Array.map(fun a -> (if a > int stdDeviationMin && a < int stdDeviationMax then a else 0)) //sould average and threshhold values.
-                avg.[i*320..(i*320)+319] <- row
+                avg.[i*DEPTH_WIDTH..(i*DEPTH_WIDTH)+319] <- row
             avg
             
 
         let removeSinglePointOutliers (avg:int[])=
             for y=0 to 238 do
-                let row = avg.[y*320..(y*320)+319]
+                let row = avg.[y*DEPTH_WIDTH..(y*DEPTH_WIDTH)+319]
                 for i = 1 to (row.Length - 2) do
                     if row.[i-1] = 0 && row.[i+1] =0 then
                       row.[i] <- 0         
-                avg.[y*320..y*320+319] <- row
+                avg.[y*DEPTH_WIDTH..y*DEPTH_WIDTH+319] <- row
             avg
 
 
         //averages the body from a set of body objects
         let avgBody (bodies:Body[]) =
-            let mutable avg = Array.zeroCreate (320*240)
+            let mutable avg = Array.zeroCreate (DEPTH_WIDTH*DEPTH_HEIGHT)
             for b in bodies do
                 for y = 0 to 239 do
                     for x = 0 to 319 do
-                         let n = y * 320 + x
+                         let n = y * DEPTH_WIDTH + x
                          avg.[n] <- avg.[n] + b.DepthImg.[n]
             avg <- avg |> Array.map(fun a -> (a / bodies.Length)) //average each pixel by dividing by the number of samples taken
             avg <- removeSinglePointOutliers avg
@@ -541,7 +545,7 @@ open System.IO
         let mutable flatFront = 0
         let mutable waistMax = 0.0
         let mutable waistMin = Double.MaxValue
-        let waistContour:int[] = Array.zeroCreate 320
+        let waistContour:int[] = Array.zeroCreate DEPTH_WIDTH
         let fn:string = "frontWaist.cvs"
         let strm = new StreamWriter( fn,  false)
         let mutable measurementCount = 0
@@ -559,7 +563,7 @@ open System.IO
 
         //pixel resolution formula, obtained empirically
         let horizontalPixelResolution depth =
-            374.0 / 80096.0 * Math.Pow(depth, -1.0)
+            374.0 / 80096.0 * Math.Pow(depth, -0.953)
         
         let measureSurfaceDistance (points:int[]) =
             
@@ -586,9 +590,14 @@ open System.IO
                     
                 i<-i+1
             measurement
-        
+
+        let measureFlatDistance (points:int[]) =
+            let resolution = horizontalPixelResolution (float points.[0])
+            (float points.Length * resolution)
+
+
         //These members find the top and bottom most points of the depth image
-        //The values they return are based on the 2D visualisation space i.e. in the range x=0-240, y=0-320
+        //The values they return are based on the 2D visualisation space i.e. in the range x=0-DEPTH_HEIGHT, y=0-DEPTH_WIDTH
         member this.GetTopOfHead (body:Body) =
             let frontBody = body
             let depthImage = frontBody.DepthImg
@@ -598,7 +607,7 @@ open System.IO
             while y < 239 && TOH.Equals(Unchecked.defaultof<Vector3>) do
                 let mutable x = 0
                 while x < 319 && TOH.Equals(Unchecked.defaultof<Vector3>) do
-                    let arrayPosition = y * 320 + x  
+                    let arrayPosition = y * DEPTH_WIDTH + x  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
                         let coordinates = new Vector3(float32 x, float32 y, float32 depth)
@@ -625,10 +634,10 @@ open System.IO
             while y < 239 && BOF.Equals(Unchecked.defaultof<Vector3>) do
                 let mutable x = 0
                 while x < 319 && BOF.Equals(Unchecked.defaultof<Vector3>) do
-                    let arrayPosition = 76799 - (y * 320 + x)  
+                    let arrayPosition = 76799 - (y * DEPTH_WIDTH + x)  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
-                        let coordinates = new Vector3(320.0f - float32 x, 240.0f - float32 y, float32 depth)
+                        let coordinates = new Vector3(float32 DEPTH_WIDTH - float32 x, float32 DEPTH_HEIGHT - float32 y, float32 depth)
                         BOF <- coordinates
                         System.Diagnostics.Debug.WriteLine("BottomOfFeet=" + BOF.ToString())
                     x <- x + 1
@@ -645,7 +654,7 @@ open System.IO
             
             let mutable y = int (backBody.GetJoint("centerHip").Y) //start at hip bone as hips are below this
             while y < (int kneeL.Y) do //finish at knee as hips are above knee
-                let pointsOnLine =  depthImage.[(y * 240)..((y * 240)+320)]
+                let pointsOnLine =  depthImage.[(y * DEPTH_HEIGHT)..((y * DEPTH_HEIGHT)+DEPTH_WIDTH)]
                 let currentFoundWidth = measureSurfaceDistance pointsOnLine
                 if currentFoundWidth > hipWidth then
                     hipWidth <- currentFoundWidth
@@ -665,7 +674,7 @@ open System.IO
                 let mutable x = 0
                 let mutable currentFoundWidth = 0
                 while x < int footL.X do
-                    let arrayPosition = (y * 320 + x)  
+                    let arrayPosition = (y * DEPTH_WIDTH + x)  
                     let depth = depthImage.[arrayPosition]
                     if depth > 0 then
                         currentFoundWidth <- currentFoundWidth + 1
@@ -682,11 +691,11 @@ open System.IO
             let depthImage = frontBody.DepthImg
             let mutable lastWidth = 0
             let mutable y = (int shoulderC)
-            while y <  240 do //finish at knee as hips are below knee
+            while y <  DEPTH_HEIGHT do //finish at knee as hips are below knee
                     let mutable x = 0
                     let mutable currentFoundWidth = 0
-                    while x < 320 do
-                        let arrayPosition = (y * 320 + x)  
+                    while x < DEPTH_WIDTH do
+                        let arrayPosition = (y * DEPTH_WIDTH + x)  
                         let depth = depthImage.[arrayPosition]
                         if depth > 0 then
                             currentFoundWidth <- currentFoundWidth + 1
@@ -725,8 +734,8 @@ open System.IO
             let mutable waistMeasurement =0.0
             let frontBody = body
             let backBody = backBody
-            let waistStart = int waist * 320
-            let waistEnd = waistStart + 320
+            let waistStart = int waist * DEPTH_WIDTH
+            let waistEnd = waistStart + DEPTH_WIDTH
             let frontRow = frontBody.DepthImg.[waistStart..waistEnd]
             let backRow = backBody.DepthImg.[waistStart..waistEnd]
             waistMeasurement <- measureSurfaceDistance frontRow
@@ -735,15 +744,21 @@ open System.IO
 
         member this.MeasureHips (body:Body, backBody:Body)=
             let mutable hipsMeasurement =0.0
-            let frontBody = body
-            let backBody = backBody
-            let hipsStart = int hips * 320
-            let hipsEnd = hipsStart + 320
-            let frontRow = frontBody.DepthImg.[hipsStart..hipsEnd]
+            let hipsStart = int hips * DEPTH_WIDTH
+            let hipsEnd = hipsStart + DEPTH_WIDTH
+            let frontRow = body.DepthImg.[hipsStart..hipsEnd]
             let backRow = backBody.DepthImg.[hipsStart..hipsEnd]
             hipsMeasurement <- measureSurfaceDistance frontRow
             hipsMeasurement <- hipsMeasurement + (measureSurfaceDistance backRow)
             hipsMeasurement
+
+        member this.MeasureHeight (body:Body)=
+            let heightStart = int topOfHead * DEPTH_WIDTH + (int (body.GetJoint("head").X))
+            let heightEnd = int bottomOfFeet * DEPTH_WIDTH + (int (body.GetJoint("head").X))
+            let heightRow = Array.zeroCreate (int bottomOfFeet - (int topOfHead))
+            for x = 0 to heightRow.Length - 1 do
+                heightRow.[x] <- body.DepthImg.[heightStart + DEPTH_WIDTH * x]
+            measureFlatDistance heightRow
 
         //top of screen to shoulders
         member this.MeasureToShoulders=
@@ -766,21 +781,23 @@ open System.IO
         member this.GetMeasurements =
             let waistMeasures = Array.zeroCreate frontBodys.Length
             let hipsMeasures = Array.zeroCreate frontBodys.Length
+            let heightMeasures = Array.zeroCreate frontBodys.Length
             for i = 0 to frontBodys.Length-1 do
                     this.GetTopOfHead frontBodys.[i] 
                     this.GetBottomOfFeet frontBodys.[i] 
                     this.GetWaist
                     this.MeasureToShoulders
                     this.MeasureToKnees
-                    this.GetHips leftSideBodys.[0]
+                    this.GetHips leftSideBodys.[i]
                     frontBodyView <- this.ConvertDepthToTexture (frontBodys.[0])
                     sideBodyView <- this.ConvertDepthToTexture (leftSideBodys.[0])
                     
                     waistMeasures.[i] <- this.MeasureWaist (frontBodys.[i], backBodys.[i])
                     hipsMeasures.[i] <- this.MeasureHips (frontBodys.[i], backBodys.[i])
-                    //let waistRow = (avgBody frontBodys).DepthImg.[(int waist * 320)..((int waist * 320)+320)] //kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+                    heightMeasures.[i] <- this.MeasureHeight (frontBodys.[i])
+                    //let waistRow = (avgBody frontBodys).DepthImg.[(int waist * DEPTH_WIDTH)..((int waist * DEPTH_WIDTH)+DEPTH_WIDTH)] //kinect.LiveDepthData.[(int waist * DEPTH_WIDTH)..((int waist * DEPTH_WIDTH)+DEPTH_WIDTH)]
                     //frontMeasurement <- measureSurfaceDistance frontBodys.[i]
-            (freqCount waistMeasures, freqCount hipsMeasures)
+            (freqCount waistMeasures, freqCount hipsMeasures, freqCount heightMeasures)
             //(waistMeasures, hipsMeasures)
 
         //member this.GetFinalMeasurements =
@@ -794,7 +811,7 @@ open System.IO
 //                hipsMeasures <- snd allMeasures
 //                pointsFound <- true
 //            if waist > 0.0f && pointsFound then
-                //let waistRow = kinect.LiveDepthData.[(int waist * 320)..((int waist * 320)+320)]
+                //let waistRow = kinect.LiveDepthData.[(int waist * DEPTH_WIDTH)..((int waist * DEPTH_WIDTH)+DEPTH_WIDTH)]
                 //try
                   //  strm.Write (frontMeasurement.ToString() + "\r\n")
                 //with 
@@ -813,21 +830,21 @@ open System.IO
 //                        waistContour.[i] <- waistRow.[i] - (Array.max waistRow - range)
 
         member this.ConvertDepthToTexture (b:Body)=
-            let img = new Texture2D(game.GraphicsDevice, 320, 240)
-            let DepthColor = Array.create (320 * 240) (new Color(255,255,255))
+            let img = new Texture2D(game.GraphicsDevice, DEPTH_WIDTH, DEPTH_HEIGHT)
+            let DepthColor = Array.create (DEPTH_WIDTH * DEPTH_HEIGHT) (new Color(255,255,255))
 
             let maxDist = 4000
             let minDist = 850
             let distOffset = maxDist - minDist
 
             for y = 0 to 239 do
-                for x = 0 to 319 do
-                    let n = (y * 320 + x)
+                for x = 0 to DEPTH_WIDTH - 1 do
+                    let n = (y * DEPTH_WIDTH + x)
                     let distance = b.DepthImg.[n]
                     //change distance to colour
                     let intensity = ((255 * Math.Max(int(distance-minDist),0)/distOffset)) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
                     let colour = new Color(intensity, intensity, intensity)
-                    DepthColor.[y * 320 + x] <- colour
+                    DepthColor.[y * DEPTH_WIDTH + x] <- colour
             img.SetData(DepthColor)
             img
 
@@ -836,23 +853,23 @@ open System.IO
             spriteBatch.Begin()
             //Draw the points of interest lines
             if frontBodyView <> null then
-                spriteBatch.Draw(frontBodyView, new Vector2(320.0f, 0.0f), Color.White)//front view
+                spriteBatch.Draw(frontBodyView, new Vector2(float32 DEPTH_WIDTH, 0.0f), Color.White)//front view
             if sideBodyView <> null then
                 spriteBatch.Draw(sideBodyView, new Vector2(640.0f, 0.0f), Color.White)//left side view
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, waist), Color.White)//Waist
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, topOfHead), Color.White)//Top of Head
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, bottomOfFeet), Color.White)//Bottom of feet
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, shoulders), Color.White)//Shoulders
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, hips), Color.White)//Hips
-            spriteBatch.Draw(pointOfInterestLine, new Vector2(320.0f, knees), Color.White)//Knees
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, waist), Color.White)//Waist
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, topOfHead), Color.White)//Top of Head
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, bottomOfFeet), Color.White)//Bottom of feet
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, shoulders), Color.White)//Shoulders
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, hips), Color.White)//Hips
+            spriteBatch.Draw(pointOfInterestLine, new Vector2(float32 DEPTH_WIDTH, knees), Color.White)//Knees
 
-            spriteBatch.DrawString(measurementFont, "Waist:"+waistMeasurement.ToString(), new Vector2(0.0f, 320.0f), Color.White);
+            spriteBatch.DrawString(measurementFont, "Waist:"+waistMeasurement.ToString(), new Vector2(0.0f, float32 DEPTH_WIDTH), Color.White);
             spriteBatch.DrawString(measurementFont, "Front@Waist:"+frontMeasurement.ToString(), new Vector2(0.0f, 340.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "Front@Waist(Flat):"+flatFront.ToString(), new Vector2(0.0f, 360.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "Max@Waist:"+waistMax.ToString(), new Vector2(0.0f, 380.0f), Color.White);
             spriteBatch.DrawString(measurementFont, "Min@Waist:"+waistMin.ToString(), new Vector2(0.0f, 400.0f), Color.White);
 
-            let visOffset = new Vector2(400.0f, 240.0f)
+            let visOffset = new Vector2(400.0f, float32 DEPTH_HEIGHT)
             for i = 0 to 319 do
                 let point = waistContour.[i]
                 if point > 0 then

@@ -59,7 +59,7 @@
             
             override this.Update(gameTime)=
                 try
-                    if kinect.GetPose().FrontMeasurePose then
+                    if kinect.GetPose(gameTime) = "front" then
                         base.UserCompliedEvent.Trigger()
                 with
                     | NoUserTracked -> ()
@@ -69,7 +69,7 @@
             
             override this.Update(gameTime)=
                 try
-                    if kinect.GetPose().SideMeasurePose then
+                    if kinect.GetPose(gameTime) = "side" then
                         base.UserCompliedEvent.Trigger()
                 with
                     | NoUserTracked -> ()
@@ -229,7 +229,8 @@
                     //game.Components.Add(new BodyMeasurements(this, kinect, frontBody, sideBody, backBody))
                     //this.Game.Components.Add(new BodyMeasurementsPostProcess(this.Game, kinect, frontBody, sideBody, backBody))
                     let processor = new BodyMeasurementsPostProcess(this.Game, kinect, frontBody, sideBody, backBody)
-                    let (waist, hips) = processor.GetMeasurements
+                    let (waist, hips, height) = processor.GetMeasurements
+                    printfn "WAIST=%A \nHIPS=%A \nHEIGHT=%A" waist hips height
                     finished <- true
                 base.Update gameTime
 
@@ -516,3 +517,33 @@
             inherit System.EventArgs()
             member this.OldScreen = oldScreen
             member this.NewScreen = newScreen
+
+        and KinectTextInputScreen(game:Game, textBox:TextBox, e:Event<ChangeScreenEventArgs>, prevScreen, kinect) as this=
+            inherit Menu(game, kinect)
+
+            let charSets = ["abcdefgh";"ijklmnop";"qrstuvwxyz"] //!@£$%^&*(),.+=-/_\"\'\\|:;[]#
+            let mutable letterPointer = 0
+            let whichCharSet = 0
+            let ltrPosition = new Vector2(100.0f, 100.0f)
+            let label = new Label(game," ", ltrPosition, "BigText")
+            
+
+            override this.LoadContent()=
+                this.Game.Components.Add(label)
+                
+                base.LoadContent()
+
+            override this.Initialize()=
+                //backButton.Click.Add(fun (args) -> backButtonClickHandler (args))
+                base.Initialize() 
+                
+            override this.Update(gameTime)=
+                let leftHandX = kinect.GetState().LeftHandPosition.X
+                let centerHipX = kinect.GetState().CenterHipReference.X
+                let diff =  (int (centerHipX - leftHandX) / 128) - 1
+                letterPointer <- if diff > game.GraphicsDevice.Viewport.Width then 8 else if diff < 0 then 0 else int(diff)
+                label.ChangeText (charSets.[whichCharSet].Substring(letterPointer, 1))
+
+            override this.DestroyScene()=
+                this.Game.Components.Remove(label) |> ignore
+                base.DestroyScene()

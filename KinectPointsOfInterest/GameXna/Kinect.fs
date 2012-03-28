@@ -2,9 +2,9 @@
     open Microsoft.Xna.Framework
     open Microsoft.Xna.Framework.Audio
     open Microsoft.Xna.Framework.Graphics
-    open Microsoft.Research.Kinect.Nui
+    open Microsoft.Kinect
 
-    open KinectHelperMethods
+    //open KinectHelperMethods
 
     open System
     open System.Windows.Forms
@@ -19,18 +19,27 @@
             && var1 < var2))
             || ((var1 - float32 disparity  <= var2 //case: var1 is less than var2 but within the range
             && var1 > var2))
+            || var1 = var2
             
             then
                 returnval <- true
            
             returnval
 
+        let processJoint (joint:Joint, nui:KinectSensor) = //process the joint and translates it from depth space to screen space for a given resolution
+                let DIPoint = nui.MapSkeletonPointToDepth(joint.Position, DepthImageFormat.Resolution320x240Fps30)
+                new Vector3(float32 DIPoint.X, float32 DIPoint.Y, joint.Position.Z )
+        
+        let processJointRel (joint:Joint, nui:KinectSensor, referenceJoint:Joint) = //process the joint and translates it from depth space to screen space for a given resolution
+                let DIPoint = nui.MapSkeletonPointToDepth(joint.Position, DepthImageFormat.Resolution320x240Fps30)
+                let DIRef = nui.MapSkeletonPointToDepth(referenceJoint.Position, DepthImageFormat.Resolution320x240Fps30)
+                new Vector3(float32 ((DIPoint.X*6)-DIRef.X), float32 ((DIPoint.Y*6)-DIRef.Y), joint.Position.Z )
 
         type KinectMeasure(game:Game)=
             inherit DrawableGameComponent(game)
 
 
-            let nui = Runtime.Kinects.[0]//kinect natural user interface object
+            let nui = KinectSensor.KinectSensors.[0]//kinect natural user interface object
             let body = new BodyData.Body()
 
             let maxDist = 4000
@@ -44,8 +53,8 @@
 
             override this.Initialize ()=
                 try 
-                    do nui.Initialize(RuntimeOptions.UseSkeletalTracking ||| RuntimeOptions.UseDepthAndPlayerIndex)
-                    do nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex)
+                    do nui.Start() 
+                    do nui.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30)
                 with
                     | :? System.InvalidOperationException -> System.Diagnostics.Debug.Write("Kinect not connected!")
                 spriteBatch <- new SpriteBatch(game.GraphicsDevice)
@@ -54,23 +63,22 @@
                 liveDepthView <- new Texture2D(game.GraphicsDevice, 320, 240)
             
             override this.Update gameTime=
-                let args = nui.DepthStream.GetNextFrame 0
+                let args = nui.DepthStream.OpenNextFrame 0
 
                 if args <> null then
-                    let pImg = args.Image
-                    let img = new Texture2D(game.GraphicsDevice, pImg.Width, pImg.Height)
-                    let DepthColor = Array.create (pImg.Width*pImg.Height) (new Color(255,255,255))
+                    let depthPixelData = Array.init args.PixelDataLength (fun x-> int16 0)
+                    args.CopyPixelDataTo depthPixelData
+                    let img = new Texture2D(game.GraphicsDevice, args.Width, args.Height)
+                    let DepthColor = Array.create (depthPixelData.Length) (new Color(255,255,255))
 
-                    for y = 0 to pImg.Height-1 do
-                        for x = 0 to pImg.Width-1 do
-                            let n = (y * pImg.Width + x) * 2
-                            let distance = (int pImg.Bits.[n + 0] >>>3) ||| (int pImg.Bits.[n + 1] <<< 5) //put together bit data as depth
-                            let pI = int (pImg.Bits.[n] &&& 7uy) // gets the player index
-                            liveDepthData.[y * pImg.Width + x] <- if pI > 0 then distance else 0
-                            //change distance to colour
-                            let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
-                            let colour = new Color(intensity, intensity, intensity)
-                            DepthColor.[y * pImg.Width + x] <- colour
+                    for n = 0 to depthPixelData.Length-1 do
+                        
+                        let distance = (int depthPixelData.[n] >>> DepthImageFrame.PlayerIndexBitmaskWidth ) //put together bit data as depth
+                        let pI = (int depthPixelData.[n] &&& DepthImageFrame.PlayerIndexBitmask) // gets the player index
+                        liveDepthData.[n] <- if pI > 0 then distance else 0
+                        let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
+                        let colour = new Color(intensity, intensity, intensity)
+                        DepthColor.[n] <- colour
                     img.SetData(DepthColor)
                     liveDepthView <- img
 
@@ -85,48 +93,46 @@
                             
             member this.CaptureBody =
                 let body = new BodyData.Body()
-                let skeletonFrame = nui.SkeletonEngine.GetNextFrame 100
-                for skeleton in skeletonFrame.Skeletons do
+                let skeletonFrame = nui.SkeletonStream.OpenNextFrame 100
+                let skeletons:Skeleton[] = Array.init skeletonFrame.SkeletonArrayLength (fun x -> null)
+                skeletonFrame.CopySkeletonDataTo skeletons
+                for skeleton in skeletons do
                     if skeleton.TrackingState.Equals(SkeletonTrackingState.Tracked) then
                         let depthWidth, depthHeight = 320, 240
-                        let leftShoulderJ = skeleton.Joints.[JointID.ShoulderLeft]
-                        let leftShoulder = new Vector3(leftShoulderJ.GetScreenPosition(nui, 320, 240).X, leftShoulderJ.GetScreenPosition(nui, 320, 240).Y, leftShoulderJ.Position.Z )
-                        let rightShoulderJ = skeleton.Joints.[JointID.ShoulderRight]
-                        let rightShoulder = new Vector3(rightShoulderJ.GetScreenPosition(nui, 320, 240).X, rightShoulderJ.GetScreenPosition(nui, 320, 240).Y, rightShoulderJ.Position.Z )
-                        let centerShoulderJ = skeleton.Joints.[JointID.ShoulderCenter]
-                        let centerShoulder = new Vector3(centerShoulderJ.GetScreenPosition(nui, 320, 240).X, centerShoulderJ.GetScreenPosition(nui, 320, 240).Y, centerShoulderJ.Position.Z )
-                        let headJ = skeleton.Joints.[JointID.Head]
-                        let head = new Vector3(headJ.GetScreenPosition(nui, 320, 240).X, headJ.GetScreenPosition(nui, 320, 240).Y, headJ.Position.Z )
-                        let leftHipJ = skeleton.Joints.[JointID.HipLeft]
-                        let leftHip = new Vector3(leftHipJ.GetScreenPosition(nui, 320, 240).X, leftHipJ.GetScreenPosition(nui, 320, 240).Y, leftHipJ.Position.Z )
-                        let rightHipJ = skeleton.Joints.[JointID.HipRight]
-                        let rightHip = new Vector3(rightHipJ.GetScreenPosition(nui, 320, 240).X, rightHipJ.GetScreenPosition(nui, 320, 240).Y, rightHipJ.Position.Z )
-                        let centerHipJ = skeleton.Joints.[JointID.HipCenter ]
-                        let centerHip = new Vector3(centerHipJ.GetScreenPosition(nui, 320, 240).X, centerHipJ.GetScreenPosition(nui, 320, 240).Y, centerHipJ.Position.Z )
-                        let leftFootJ = skeleton.Joints.[JointID.FootLeft]
-                        let leftFoot = new Vector3(leftFootJ.GetScreenPosition(nui, 320, 240).X, leftFootJ.GetScreenPosition(nui, 320, 240).Y, leftFootJ.Position.Z )
-                        let rightFootJ = skeleton.Joints.[JointID.FootRight]
-                        let rightFoot = new Vector3(rightFootJ.GetScreenPosition(nui, 320, 240).X, rightFootJ.GetScreenPosition(nui, 320, 240).Y, rightFootJ.Position.Z )
-                        let leftKneeJ = skeleton.Joints.[JointID.KneeLeft]
-                        let leftKnee = new Vector3(leftKneeJ.GetScreenPosition(nui, 320, 240).X, leftKneeJ.GetScreenPosition(nui, 320, 240).Y, leftKneeJ.Position.Z )
-                        let rightKneeJ = skeleton.Joints.[JointID.KneeRight]
-                        let rightKnee = new Vector3(rightKneeJ.GetScreenPosition(nui, 320, 240).X, rightKneeJ.GetScreenPosition(nui, 320, 240).Y, rightKneeJ.Position.Z )
+                        let leftShoulder= processJoint(skeleton.Joints.[JointType.ShoulderLeft], nui)
+                        let rightShoulder = processJoint(skeleton.Joints.[JointType.ShoulderRight], nui)
+                        let centerShoulder = processJoint(skeleton.Joints.[JointType.ShoulderCenter], nui)
+                        let head = processJoint(skeleton.Joints.[JointType.Head], nui)
+                        let leftHip = processJoint(skeleton.Joints.[JointType.HipLeft], nui)
+                        let rightHip = processJoint(skeleton.Joints.[JointType.HipRight], nui)
+                        let centerHip = processJoint(skeleton.Joints.[JointType.HipCenter ], nui)
+                        let leftFoot = processJoint(skeleton.Joints.[JointType.FootLeft], nui)
+                        let rightFoot = processJoint(skeleton.Joints.[JointType.FootRight], nui)
+                        let leftKnee = processJoint(skeleton.Joints.[JointType.KneeLeft], nui)
+                        let rightKnee = processJoint(skeleton.Joints.[JointType.KneeRight], nui)
                         
                         body.SetSkeleton(head, leftShoulder, rightShoulder, centerShoulder, leftHip, rightHip, centerHip, leftFoot,rightFoot, leftKnee, rightKnee)
+                skeletonFrame.Dispose()
 
-                let depthFrame = nui.DepthStream.GetNextFrame 100
-                let pImg = depthFrame.Image
+                let depthFrame = nui.DepthStream.OpenNextFrame 100
 
                 let distancesArray = Array.create (320*240) 0
 
-                for y = 0 to pImg.Height-1 do
-                    for x = 0 to pImg.Width-1 do
-                        let n = (y * pImg.Width + x) * 2
-                        let distance = (int pImg.Bits.[n + 0] >>>3) ||| (int pImg.Bits.[n + 1] <<< 5) //put together bit data as depth
-                        let pI = int (pImg.Bits.[n] &&& 7uy) // gets the player index
-                        
-                        distancesArray.[y*pImg.Width + x] <- if pI > 0 then distance else 0
+                let depthPixelData = Array.create depthFrame.PixelDataLength (int16 0)
+                depthFrame.CopyPixelDataTo depthPixelData
+                let img = new Texture2D(game.GraphicsDevice, depthFrame.Width, depthFrame.Height)
+                let DepthColor = Array.create (depthPixelData.Length) (new Color(255,255,255))
 
+                //for y = 0 to pImg.Height-1 do
+                for n = 0 to depthPixelData.Length-1 do
+                    //let n = (y * pImg.Width + x) * 2
+                    let distance = (int depthPixelData.[n] >>> DepthImageFrame.PlayerIndexBitmaskWidth ) //put together bit data as depth
+                    let pI = int (int depthPixelData.[n] &&& DepthImageFrame.PlayerIndexBitmask) // gets the player index
+                    liveDepthData.[n] <- if pI > 0 then distance else 0
+                    //change distance to colour
+                    let intensity = (if pI > 0 then (255-(255 * Math.Max(int(distance-minDist),0)/distOffset)) else 0) //convert distance into a gray level value between 0 and 255 taking into account min and max distances of the kinect.
+                    let colour = new Color(intensity, intensity, intensity)
+                    DepthColor.[n] <- colour
                 body.DepthImg <- distancesArray
                 body
 
@@ -139,12 +145,17 @@
             let CLICKSENSITIVITY = 0.7f //lower is more sensitive
         
             let mutable nui = null
-        
+            
+            let mutable poseTime = 0
+            let mutable lastPoseTime =0
+            let prevPoseStates = Array.init 6 (fun x -> new KinectPoseState(game, nui))
+
             let maxDist = 4000
             let minDist = 850
             let distOffset = maxDist - minDist
 
             let mutable skeletonFrame = null
+            let mutable lastSkeletonFrame = null
 
             let mutable leftHand = Vector3.Zero
             let mutable leftShoulder = Vector3.Zero
@@ -153,6 +164,9 @@
             let mutable rightElbow = Vector3.Zero
             let mutable rightShoulder = Vector3.Zero
             let mutable leftElbow = Vector3.Zero
+            let mutable rightFoot = Vector3.Zero
+            let mutable leftFoot = Vector3.Zero
+            let mutable centerShoulder = Vector3.Zero
 
             let mutable rightHandColor = Color.White
             let mutable leftHandColor = Color.White
@@ -167,25 +181,22 @@
 
             let kinectInitalize =
                 try 
-                    nui <- Runtime.Kinects.[0]//kinect natural user interface object
-                    do nui.Initialize(RuntimeOptions.UseSkeletalTracking ||| RuntimeOptions.UseDepthAndPlayerIndex)
-                    do nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex)
-                    nui.SkeletonEngine.TransformSmooth <- true
+                    nui <- KinectSensor.KinectSensors.[0]//kinect natural user interface object
+                    nui.Start() //(RuntimeOptions.UseSkeletalTracking ||| RuntimeOptions.UseDepthAndPlayerIndex)
+                    do nui.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30)
                     let mutable parameters = new TransformSmoothParameters() // smooth out skeletal jiter
                     parameters.Smoothing <- 0.5f
                     parameters.Correction <- 0.3f
                     parameters.Prediction <- 0.3f
                     parameters.JitterRadius <- 1.0f
                     parameters.MaxDeviationRadius <- 0.3f
-                    nui.SkeletonEngine.SmoothParameters <- parameters
+                    nui.SkeletonStream.Enable(parameters)
                 with
                     | :? System.InvalidOperationException -> System.Diagnostics.Debug.Write("Kinect not connected!")
                     | :? System.ArgumentOutOfRangeException -> System.Diagnostics.Debug.Write("Kinect not connected!")
         
             let depthWidth, depthHeight = 1024, 768
-            let processJoint (joint:Joint) = //process the joint and translates it from depth space to screen space for a given resolution
-                new Vector3(joint.GetScreenPosition(nui, depthWidth, depthHeight).X, joint.GetScreenPosition(nui, depthWidth, depthHeight).Y, joint.Position.Z )
-
+            
        
             override this.Initialize ()=
                 spriteBatch <- new SpriteBatch(game.GraphicsDevice)
@@ -199,26 +210,26 @@
             
             override this.Update gameTime=
                 if nui <> null then //only update possitions and get hand positions if kinect connected
-                    skeletonFrame <- nui.SkeletonEngine.GetNextFrame 0
+                    skeletonFrame <- nui.SkeletonStream.OpenNextFrame 0
+                    
                     if skeletonFrame <> null then
-                        for skeleton in skeletonFrame.Skeletons do
+                        let skeletons = Array.init (skeletonFrame.SkeletonArrayLength) (fun x -> null)
+                        skeletonFrame.CopySkeletonDataTo skeletons
+                        for skeleton in skeletons do
                             if skeleton.TrackingState.Equals(SkeletonTrackingState.Tracked) then
                                 //let depthWidth, depthHeight = 320, 240
-                                leftHand <- processJoint skeleton.Joints.[JointID.HandLeft]
-                                leftShoulder <- processJoint skeleton.Joints.[JointID.ShoulderLeft]
-                                leftElbow <- processJoint skeleton.Joints.[JointID.ElbowLeft]
-                                rightHand <- processJoint skeleton.Joints.[JointID.HandRight]
-                                centerHip <- processJoint skeleton.Joints.[JointID.HipCenter]
-                                rightElbow <- processJoint skeleton.Joints.[JointID.ElbowRight]
-                                rightShoulder <- processJoint skeleton.Joints.[JointID.ShoulderRight]
-
-    //                    let hand2elbow = ()
-    //                    let crossHandShoulder = Vector3.Cross(rightHand, rightShoulder)
-    //                    let crossHandElbow = Vector3.Cross(rightHand, rightElbow)
-    //                    if Vector3.Distance(crossHandShoulder, Vector3.Zero) < 10.0f && Vector3.Distance(crossHandElbow, Vector3.Zero) < 10.0f then
-    //                        System.Diagnostics.Debug.WriteLine("\n*******ARM IS STRAIGHT*********\n")
-    //
-    //                    System.Diagnostics.Debug.WriteLine("crossHandShoulder:"+ Vector3.Distance(crossHandShoulder, Vector3.Zero).ToString())
+                                leftHand <- processJoint( skeleton.Joints.[JointType.HandLeft], nui)
+                                leftShoulder <- processJoint( skeleton.Joints.[JointType.ShoulderLeft], nui)
+                                leftElbow <- processJoint(skeleton.Joints.[JointType.ElbowLeft], nui)
+                                rightHand <- processJoint(skeleton.Joints.[JointType.HandRight], nui)
+                                centerHip <- processJoint(skeleton.Joints.[JointType.HipCenter], nui)
+                                rightElbow <- processJoint(skeleton.Joints.[JointType.ElbowRight], nui)
+                                rightShoulder <- processJoint(skeleton.Joints.[JointType.ShoulderRight], nui)
+                                rightFoot <- processJoint(skeleton.Joints.[JointType.FootRight], nui)
+                                leftFoot <- processJoint(skeleton.Joints.[JointType.FootRight], nui)
+                                centerShoulder <- processJoint(skeleton.Joints.[JointType.ShoulderCenter], nui)
+                        //lastSkeletonFrame <- skeletonFrame
+                        skeletonFrame.Dispose()
 
                     let RhesDist = Vector3.Distance(rightShoulder, rightElbow) + Vector3.Distance(rightElbow, rightHand)
                     let RhsDist = Vector3.Distance(rightShoulder, rightHand)
@@ -227,12 +238,12 @@
                     let LhsDist = Vector3.Distance(leftShoulder, leftHand)
                     let lhClick = fuzzyEquals RhesDist RhsDist 6
 
-                    System.Diagnostics.Debug.WriteLine("RIGHT HAND CLICK:"+(RhesDist-RhsDist).ToString())
+                    //System.Diagnostics.Debug.WriteLine("RIGHT HAND CLICK:"+(RhesDist-RhsDist).ToString())
                     if rhClick && rightHandColor.Equals(Color.White) then //a click with right hand
                         System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>kinectClick @ " + string gameTime.TotalGameTime.Seconds + " seconds<<<<<<<<<<<<")
                         countClicks <- countClicks + 1
                         rightHandColor <- Color.Red 
-                        clickSound.Play() |> ignore
+                        //clickSound.Play() |> ignore
                         System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>end of kinect click<<<<<<<<<<<<")
                 
                     else if not rhClick then //release right hand click
@@ -254,17 +265,61 @@
                     spriteBatch.Draw(jointSprite, new Vector2(leftShoulder.X, leftShoulder.Y), Color.White)
                     spriteBatch.Draw(jointSprite, new Vector2(leftElbow.X, leftElbow.Y), Color.White)
                     spriteBatch.Draw(jointSprite, new Vector2(rightElbow.X, rightElbow.Y), Color.White)
+                    spriteBatch.Draw(jointSprite, new Vector2(leftFoot.X, leftFoot.Y), Color.White)
+                    spriteBatch.Draw(jointSprite, new Vector2(rightFoot.X, rightFoot.Y), Color.White)
+                    spriteBatch.Draw(jointSprite, new Vector2(centerShoulder.X, centerShoulder.Y), Color.White)
+                    spriteBatch.Draw(jointSprite, new Vector2(centerHip.X, centerHip.Y), Color.White)
                     spriteBatch.End()
 
-            member this.GetState() = new KinectCursorState(leftHand, (if leftHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), rightHand, (if rightHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            member this.GetState() = new KinectCursorState(leftHand, (if leftHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), rightHand, (if rightHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), centerHip)
         
         
+            member this.PoseStable (poseArray:KinectPoseState[])=
+                let mutable stable = true
+                for x = 0 to 4 do
+                    if stable then
+                        stable <- poseArray.[x].Close poseArray.[x+1]
+                stable
 
-            member this.GetPose() = if skeletonFrame <> null then new KinectPoseState(game, nui, skeletonFrame) else raise NoUserTracked
-                
+            member this.PoseType (poseArray:KinectPoseState[])=
+                let mutable poseType = 0
+                for x in poseArray do
+                    if x.FrontMeasurePose then
+                         poseType <- poseType + 1
+                         System.Console.WriteLine "frontPose Detected" 
+                    else if x.SideMeasurePose then
+                         poseType <- poseType + 2
+                         System.Console.WriteLine "sidePose Detected" 
+
+                if poseType = 6 then
+                    "Front"
+                else if poseType = 12 then
+                    "Side"
+                else
+                    "None"
+            member this.GetPose(gameTime:GameTime) = 
+                lastPoseTime <- lastPoseTime + gameTime.ElapsedGameTime.Milliseconds
+                if lastPoseTime >= 500 then
+                    if skeletonFrame <> null then 
+                        for x = 0 to 4 do
+                            prevPoseStates.[x] <- prevPoseStates.[x+1]
+                        prevPoseStates.[5] <- new KinectPoseState(game, nui, leftHand,rightHand,leftFoot,rightFoot,leftShoulder,rightShoulder,centerShoulder, centerHip ) 
+                        System.Console.WriteLine "NEW POSE ADDED" 
+                    else 
+                        raise NoUserTracked
+                    lastPoseTime <- 0
+                if this.PoseStable prevPoseStates then
+                    if this.PoseType prevPoseStates = "Front" then
+                        "front"
+                    else if this.PoseType prevPoseStates = "Side" then
+                        "side"
+                    else
+                        "none"
+                else
+                    "none"
 
         //****************************************************************       
-        and KinectCursorState(leftHandPos, leftButton, rightHandPos, rightButton)=
+        and KinectCursorState(leftHandPos, leftButton, rightHandPos, rightButton, centerHips)=
 
             member this.LeftHandPosition
                 with get() = leftHandPos
@@ -278,36 +333,19 @@
             member this.RightButton
                 with get() = rightButton
 
-        and KinectPoseState(game:Game, nui:Runtime, skeletonFrame:SkeletonFrame)=
-            let depthWidth, depthHeight = game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height
+            member this.CenterHipReference
+                with get() = centerHips
 
-            let mutable leftHand, rightHand, centerHips, centerShoulder, leftShoulder, rightShoulder, leftFoot, rightFoot = 
-                Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero
-
-            let processJoint (joint:Joint) = //process the joint and translates it from depth space to screen space for a given resolution
-                new Vector3(joint.GetScreenPosition(nui, depthWidth, depthHeight).X, joint.GetScreenPosition(nui, depthWidth, depthHeight).Y, joint.Position.Z )
-                
-            do for skeleton in skeletonFrame.Skeletons do
-                do if skeleton.TrackingState.Equals(SkeletonTrackingState.Tracked) then
-                
-                    leftHand <- processJoint skeleton.Joints.[JointID.ElbowLeft]
-                    rightHand <- processJoint skeleton.Joints.[JointID.ElbowRight]
-                    centerHips <- processJoint skeleton.Joints.[JointID.HipCenter]
-                    centerShoulder <- processJoint skeleton.Joints.[JointID.ShoulderCenter]
-                    leftShoulder <- processJoint skeleton.Joints.[JointID.ShoulderLeft]
-                    rightShoulder <- processJoint skeleton.Joints.[JointID.ShoulderRight]
-                    leftFoot <- processJoint skeleton.Joints.[JointID.FootLeft]
-                    rightFoot <- processJoint skeleton.Joints.[JointID.FootRight]          
-                
-        
-        
+        and KinectPoseState(game:Game, nui:KinectSensor, leftHand,rightHand,leftFoot,rightFoot,leftShoulder,rightShoulder,centerShoulder, centerHips )=
+            let depthWidth, depthHeight = 1024, 768
+            new(game:Game, nui:KinectSensor) = KinectPoseState(game, nui, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero)
 
             //detects if the user in standing in the correct pos to be measured from the front
             member this.FrontMeasurePose=
                 let mutable result = false
                 let disparity = 20
-                if fuzzyEquals leftHand.Y rightHand.Y disparity //left and right hand are level
-                && fuzzyEquals leftShoulder.Y rightShoulder.Y disparity // left and right shoulder are straight
+                if fuzzyEquals leftHand.Y rightHand.Y disparity && not (fuzzyEquals leftHand.X rightHand.X 5)//left and right hand are level
+                && fuzzyEquals leftShoulder.Y rightShoulder.Y disparity && not (fuzzyEquals leftShoulder.X rightHand.X disparity) // left and right shoulder are straight
                 && fuzzyEquals leftHand.Y centerShoulder.Y disparity //left hand is level with shoulders
                 && fuzzyEquals centerShoulder.X centerHips.X disparity //back is straight
                 && fuzzyEquals leftFoot.X rightFoot.X 100 //feet are not too far apart
@@ -318,12 +356,49 @@
             //detects if the user in standing in the correct pos to be measured from the front
             member this.SideMeasurePose=
                 let mutable result = false
-                let disparity = 10
-                if fuzzyEquals leftHand.Y rightHand.Y disparity && fuzzyEquals leftHand.X rightHand.X disparity //left and right hand are level//left and right hand are level
-                && fuzzyEquals leftShoulder.Y rightShoulder.Y disparity && fuzzyEquals leftShoulder.X rightShoulder.X disparity// left and right shoulder are straight
-                && fuzzyEquals leftHand.Y centerShoulder.Y disparity && fuzzyEquals leftHand.X centerShoulder.X disparity//left hand is level with shoulders
+                let disparity = 20
+                if fuzzyEquals leftHand.Y rightHand.Y disparity && fuzzyEquals leftHand.X rightHand.X disparity//left and right hand are level//left and right hand are level
+                && fuzzyEquals leftShoulder.Y rightShoulder.Y disparity && fuzzyEquals leftShoulder.X rightShoulder.X disparity // left and right shoulder are straight
+                && fuzzyEquals leftHand.Y centerShoulder.Y disparity && fuzzyEquals leftHand.X centerShoulder.X disparity //left hand is level with shoulders
                 && fuzzyEquals centerShoulder.X centerHips.X disparity //back is straight
-                && fuzzyEquals leftFoot.X rightFoot.X 10 && fuzzyEquals leftFoot.Y rightFoot.Y 10//feet are together
+                && not(fuzzyEquals centerShoulder.Y leftFoot.Y disparity)
+                //&& fuzzyEquals leftFoot.X rightFoot.X 10 && fuzzyEquals leftFoot.Y rightFoot.Y 10//feet are together
                 then
                     result <- true
                 result
+
+            member this.Close (kps:KinectPoseState)=
+                let disparity = 10
+                fuzzyEquals this.LeftHand.Y kps.LeftHand.Y disparity
+                && fuzzyEquals this.LeftHand.X kps.LeftHand.X disparity
+                && fuzzyEquals this.LeftFoot.Y kps.LeftFoot.Y disparity
+                && fuzzyEquals this.LeftFoot.X kps.LeftFoot.X disparity
+                && fuzzyEquals this.RightHand.Y kps.RightHand.Y disparity
+                && fuzzyEquals this.RightHand.X kps.RightHand.X disparity
+                && fuzzyEquals this.RightFoot.Y kps.RightFoot.Y disparity
+                && fuzzyEquals this.RightFoot.X kps.RightFoot.X disparity
+                && fuzzyEquals this.RightShoulder.Y kps.RightShoulder.Y disparity
+                && fuzzyEquals this.RightShoulder.X kps.RightShoulder.X disparity
+                && fuzzyEquals this.LeftShoulder.Y kps.LeftShoulder.Y disparity
+                && fuzzyEquals this.LeftShoulder.X kps.LeftShoulder.X disparity
+                && fuzzyEquals this.CenterHips.Y kps.CenterHips.Y disparity
+                && fuzzyEquals this.CenterHips.X kps.CenterHips.X disparity
+                && fuzzyEquals this.CenterShoulders.Y kps.CenterShoulders.Y disparity 
+                && fuzzyEquals this.CenterShoulders.X kps.CenterShoulders.X disparity
+
+            member this.LeftHand
+                with get():Vector3 = leftHand    
+            member this.RightHand
+                with get():Vector3 = rightHand 
+            member this.LeftShoulder
+                with get():Vector3 = leftShoulder
+            member this.RightShoulder
+                with get():Vector3 = rightShoulder
+            member this.LeftFoot
+                with get():Vector3 = leftFoot
+            member this.RightFoot
+                with get():Vector3 = rightFoot
+            member this.CenterShoulders
+                with get():Vector3 = centerShoulder
+            member this.CenterHips
+                with get():Vector3 = centerHips

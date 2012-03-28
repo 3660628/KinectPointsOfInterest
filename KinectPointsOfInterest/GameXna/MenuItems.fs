@@ -7,6 +7,7 @@ open Microsoft.Xna.Framework.Input
 open EventControllers
 
 open System.Collections
+open KinectHelperMethods
 
 open System.Net
 open System.IO
@@ -193,73 +194,7 @@ open Kinect
 
             let mutable font:SpriteFont = null
 
-            let (acceptableKeys:Keys list) = [Keys.A; Keys.B; Keys.C; Keys.D; Keys.E; Keys.F; Keys.G; Keys.H; 
-                                              Keys.I; Keys.J; Keys.K; Keys.L; Keys.M; Keys.N; Keys.O; Keys.P; 
-                                              Keys.Q; Keys.R; Keys.S; Keys.T; Keys.U; Keys.V; Keys.W; Keys.X; 
-                                              Keys.Y;Keys.Z; Keys.D0; Keys.D1; Keys.D2; Keys.D3; Keys.D4; Keys.D5;
-                                              Keys.D6; Keys.D7; Keys.D8; Keys.D9; Keys.Back; Keys.Left; Keys.Right; 
-                                              Keys.OemComma; Keys.OemBackslash; Keys.OemPeriod; Keys.OemQuestion;
-                                              Keys.OemMinus; Keys.OemPlus; Keys.OemQuotes]
-
             let deselectEvent:Event<_> = event
-            
-            let mutable caps = false
-
-            let OnKeyPress (args:Keyboard.KeyboardArgs) =
-                if selected then
-                    
-                    let k = args.Key
-                    match k with
-                        | Keys.Space -> text <- text.Substring(0,carrotPosition) + " " + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                        carrotPosition <- carrotPosition + 1
-                        | Keys.OemMinus -> if caps then
-                                                text <-text.Substring(0,carrotPosition) + "_" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                           else
-                                                text <-text.Substring(0,carrotPosition) + "-" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                           carrotPosition <- carrotPosition + 1
-                        | Keys.OemPlus -> if caps then
-                                                text <-text.Substring(0,carrotPosition) + "+" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                          else
-                                                text <-text.Substring(0,carrotPosition) + "=" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                          carrotPosition <- carrotPosition + 1
-                        | Keys.OemQuotes -> if caps then
-                                                text <-text.Substring(0,carrotPosition) + "@" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                            else
-                                                text <-text.Substring(0,carrotPosition) + "'" + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                            carrotPosition <- carrotPosition + 1
-                        | x when x.Equals(Keys.Back) -> carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
-                                                        if text.Length > 0 then text <- text.Remove(carrotPosition,1)
-                        | x when x.Equals(Keys.Left) -> carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
-                        | x when x.Equals(Keys.Right) -> carrotPosition <- System.Math.Min(carrotPosition + 1, text.Length)
-                        //| x when x = Seq.toList(x.ToString())  = true -> text <- text + (string)7
-                        | Keys.D0 | Keys.D1 | Keys.D2 | Keys.D3 | Keys.D4 | Keys.D5 | Keys.D6 | Keys.D7 | Keys.D8 | Keys.D9 
-                            ->  let valAsString = System.Text.RegularExpressions.Regex.Match(args.Key.ToString(), @"\d+").Value
-                                let number = snd(System.Int32.TryParse(valAsString))
-                                if not caps then
-                                    text <- text.Substring(0,carrotPosition) + number.ToString() + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                else
-                                    text <- text.Substring(0,carrotPosition) + match number with 
-                                                                                    | 1 -> "!"
-                                                                                    | 2 -> "\""
-                                                                                    | 3 -> "£"
-                                                                                    | 4 -> "$"
-                                                                                    | 5 -> "%"
-                                                                                    | 6 -> "^"
-                                                                                    | 7 -> "&"
-                                                                                    | 8 -> "*"
-                                                                                    | 9 -> "("
-                                                                                    | 0 -> ")" 
-                                                                                    + text.Substring(carrotPosition, text.Length - carrotPosition)
-                                carrotPosition <- carrotPosition + 1
-                        
-                        | _ -> text <- text.Substring(0,carrotPosition) + (if caps then args.Key.ToString() else args.Key.ToString().ToLower()) + text.Substring(carrotPosition, text.Length - carrotPosition)
-                               carrotPosition <- carrotPosition + 1
-            
-            do game.Components.Add(new EventControllerComponent(game))
-            let keyboard = ControllerFactory.GetKeyboard()
-            do keyboard.KeysToCapture.Clear()
-            do List.iter (fun x -> keyboard.KeysToCapture.Add(x)) acceptableKeys
-            do keyboard.OnClick.Add(fun args -> OnKeyPress args)
 
             let mutable textCenterY = 0.0f
             let mutable spriteCenterY = 0.0f
@@ -274,6 +209,19 @@ open Kinect
             member this.Deselect =
                 selected <- false
             
+            override this.Initialize()=
+                KinectHelperMethods.KeyGrabber.add_InboundCharEvent (fun x -> 
+                                                                            if selected then 
+                                                                                if x <> '\b' then
+                                                                                    (text <- text.Substring(0,carrotPosition) + x.ToString() + text.Substring(carrotPosition, text.Length - carrotPosition))
+                                                                                    carrotPosition <- carrotPosition + 1
+                                                                                    System.Diagnostics.Debug.WriteLine(x)
+                                                                                else
+                                                                                    carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
+                                                                                    if text.Length > 0 then text <- text.Remove(carrotPosition,1)
+                                                                                )
+                base.Initialize()
+
             override this.LoadContent()=
                 base.LoadContent()
                 font <- game.Content.Load<SpriteFont>("textBoxFont")
@@ -291,11 +239,6 @@ open Kinect
                             selected <- true
                 if mouse.LeftButton = ButtonState.Released then
                     leftClick <- false
-
-                if Keyboard.GetState().IsKeyDown(Keys.LeftShift) then
-                    caps <- true
-                else
-                    caps <- false
 
                 textMask <- maskText text
 
@@ -325,18 +268,21 @@ open Kinect
 
 
         [<AllowNullLiteral>] //allow null as a proper value
-        type Label(game, label:string, pos:Vector2)=
+        type Label(game, l:string, pos:Vector2, fontName)=
             inherit DrawableMenuItem(game, "no_texture", "no_shadow", pos)
 
+            let mutable label = l
             let mutable labelOrigin = Vector2.Zero
             let mutable font:SpriteFont = null
+
+            new (game, l:string, pos:Vector2) = new Label(game, l, pos, "Font")
 
             override this.Initialize()=
                 
                 base.Initialize()
 
             override this.LoadContent()=
-                font <- game.Content.Load<SpriteFont>("Font")
+                font <- game.Content.Load<SpriteFont>(fontName)
                 labelOrigin <- Vector2.Divide(font.MeasureString(label), 2.0f)
                 base.LoadContent()
 
@@ -345,6 +291,13 @@ open Kinect
                 base.SpriteBatch.Begin()
                 base.SpriteBatch.DrawString(font, label, base.Position, Color.White, 0.0f, labelOrigin, 1.0f, SpriteEffects.None, 0.5f)
                 base.SpriteBatch.End()
+
+            member this.ChangeText t=
+                label <- t
+
+            member this.Font
+                with set(f) = font <- f
+
 
         [<AllowNullLiteral>] //allow null as a proper value
         type GarmentItem(game:Game, garment:Store.Garment, pos, kinect)=
