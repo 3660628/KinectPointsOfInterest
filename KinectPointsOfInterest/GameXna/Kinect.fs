@@ -26,9 +26,17 @@
            
             returnval
 
+        let fuzzyEqualsVector (var1:Vector3) (var2:Vector3) disparity=
+            let mutable returnval = false
+            if fuzzyEquals var1.X var2.X disparity
+            && fuzzyEquals var1.Y var2.Y disparity then
+                returnval <- true
+           
+            returnval
+
         let processJoint (joint:Joint, nui:KinectSensor) = //process the joint and translates it from depth space to screen space for a given resolution
                 let DIPoint = nui.MapSkeletonPointToDepth(joint.Position, DepthImageFormat.Resolution320x240Fps30)
-                new Vector3(float32 DIPoint.X, float32 DIPoint.Y, joint.Position.Z )
+                new Vector3(float32 DIPoint.X * 4.0f - 256.0f , float32 DIPoint.Y* 4.0f - 256.0f, joint.Position.Z )
         
         let processJointRel (joint:Joint, nui:KinectSensor, referenceJoint:Joint) = //process the joint and translates it from depth space to screen space for a given resolution
                 let DIPoint = nui.MapSkeletonPointToDepth(joint.Position, DepthImageFormat.Resolution320x240Fps30)
@@ -142,7 +150,8 @@
         type KinectCursor(game:Game)=
             inherit DrawableGameComponent(game)
         
-            let CLICKSENSITIVITY = 0.7f //lower is more sensitive
+            let CLICKSENSITIVITY = 5 //lower is more sensitive
+            let CLICKTIME = 1.5
         
             let mutable nui = null
             
@@ -168,8 +177,12 @@
             let mutable leftFoot = Vector3.Zero
             let mutable centerShoulder = Vector3.Zero
 
-            let mutable rightHandColor = Color.White
-            let mutable leftHandColor = Color.White
+            let mutable rightHandClick = false
+            let mutable leftHandClick = false
+
+            let mutable rightClickTime = 0.0
+            let mutable leftClickTime = 0.0
+            let mutable lastRightHandPos = Vector3.Zero
 
             let mutable rightHandSprite:Texture2D = null //hand cursor texture
             let mutable leftHandSprite:Texture2D = null
@@ -204,7 +217,7 @@
                 this.LoadContent()
             
             override this.LoadContent()=
-                rightHandSprite <- game.Content.Load<Texture2D>("UI/HandRight70x81")
+                rightHandSprite <- game.Content.Load<Texture2D>("UI/HandRight70x81Animated")
                 leftHandSprite <- game.Content.Load<Texture2D>("UI/HandLeft70x81")
                 jointSprite <- game.Content.Load<Texture2D>("Sprite")
             
@@ -231,36 +244,53 @@
                         //lastSkeletonFrame <- skeletonFrame
                         skeletonFrame.Dispose()
 
-                    let RhesDist = Vector3.Distance(rightShoulder, rightElbow) + Vector3.Distance(rightElbow, rightHand)
-                    let RhsDist = Vector3.Distance(rightShoulder, rightHand)
-                    let rhClick = fuzzyEquals RhesDist RhsDist 6
-                    let LhesDist = Vector3.Distance(leftShoulder, leftElbow) + Vector3.Distance(leftElbow, leftHand)
-                    let LhsDist = Vector3.Distance(leftShoulder, leftHand)
-                    let lhClick = fuzzyEquals RhesDist RhsDist 6
-
-                    //System.Diagnostics.Debug.WriteLine("RIGHT HAND CLICK:"+(RhesDist-RhsDist).ToString())
-                    if rhClick && rightHandColor.Equals(Color.White) then //a click with right hand
-                        System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>kinectClick @ " + string gameTime.TotalGameTime.Seconds + " seconds<<<<<<<<<<<<")
-                        countClicks <- countClicks + 1
-                        rightHandColor <- Color.Red 
-                        //clickSound.Play() |> ignore
-                        System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>end of kinect click<<<<<<<<<<<<")
-                
-                    else if not rhClick then //release right hand click
-                        rightHandColor <- Color.White
+//                    let RhesDist = Vector3.Distance(rightShoulder, rightElbow) + Vector3.Distance(rightElbow, rightHand)
+//                    let RhsDist = Vector3.Distance(rightShoulder, rightHand)
+//                    let rhClick = fuzzyEquals RhesDist RhsDist 6
+//                    let LhesDist = Vector3.Distance(leftShoulder, leftElbow) + Vector3.Distance(leftElbow, leftHand)
+//                    let LhsDist = Vector3.Distance(leftShoulder, leftHand)
+//                    let lhClick = fuzzyEquals RhesDist RhsDist 6
+//
+//                    //System.Diagnostics.Debug.WriteLine("RIGHT HAND CLICK:"+(RhesDist-RhsDist).ToString())
+//                    if rhClick && rightHandColor.Equals(Color.White) then //a click with right hand
+//                        System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>kinectClick @ " + string gameTime.TotalGameTime.Seconds + " seconds<<<<<<<<<<<<")
+//                        countClicks <- countClicks + 1
+//                        rightHandColor <- Color.Red 
+//                        //clickSound.Play() |> ignore
+//                        System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>end of kinect click<<<<<<<<<<<<")
+//                
+//                    else if not rhClick then //release right hand click
+//                        rightHandColor <- Color.White
 
 //                    if (Vector3.Distance(leftShoulder, leftHand)) >= CLICKSENSITIVITY && leftHandColor.Equals(Color.White) then //a click with left hand
 //                        leftHandColor <- Color.Red 
 //                        clickSound.Play() |> ignore
 //                    else if (Vector3.Distance(leftShoulder, leftHand)) < CLICKSENSITIVITY then //relese left hand click
 //                        leftHandColor <- Color.White
-            
+                        if (fuzzyEqualsVector lastRightHandPos rightHand CLICKSENSITIVITY) then
+                            rightClickTime <- rightClickTime + gameTime.ElapsedGameTime.TotalSeconds
+                        else
+                            rightHandClick <- false
+                            rightClickTime <- 0.0
+                    
+                        if rightClickTime >= CLICKTIME && not rightHandClick then
+                            System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>kinectClick @ " + string gameTime.TotalGameTime.Seconds + " seconds<<<<<<<<<<<<")
+                            countClicks <- countClicks + 1
+                            rightHandClick <- true
+                            clickSound.Play() |> ignore
+                            System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>end of kinect click<<<<<<<<<<<<")
+                        if rightClickTime >= CLICKTIME + 0.5 then
+                            rightHandClick <- false
+                            rightClickTime <- 0.0
+                    lastRightHandPos <- rightHand //update last right hand position
 
             override this.Draw gameTime=
                 if nui <> null then //only draw the hand cursor if a kinect is connected
+                    let rightHandAnimationFrame = int (Math.Min((Math.Round((rightClickTime * (10.0/CLICKTIME)), 0)), 10.0))
+                    System.Diagnostics.Debug.WriteLine("aniFrame:" + rightHandAnimationFrame.ToString())
                     spriteBatch.Begin()
-                    spriteBatch.Draw(rightHandSprite, new Vector2(rightHand.X, rightHand.Y), rightHandColor) //draw right hand cursor
-                    spriteBatch.Draw(leftHandSprite, new Vector2(leftHand.X, leftHand.Y), leftHandColor) //draw left hand cursor
+                    spriteBatch.Draw(rightHandSprite, new Vector2(rightHand.X, rightHand.Y), Nullable<_> (new Rectangle (rightHandAnimationFrame*70,0, 70,81)), Color.White) //draw right hand cursor
+                    spriteBatch.Draw(leftHandSprite, new Vector2(leftHand.X, leftHand.Y), Color.White) //draw left hand cursor
                     spriteBatch.Draw(jointSprite, new Vector2(rightShoulder.X, rightShoulder.Y), Color.White)
                     spriteBatch.Draw(jointSprite, new Vector2(leftShoulder.X, leftShoulder.Y), Color.White)
                     spriteBatch.Draw(jointSprite, new Vector2(leftElbow.X, leftElbow.Y), Color.White)
@@ -271,7 +301,7 @@
                     spriteBatch.Draw(jointSprite, new Vector2(centerHip.X, centerHip.Y), Color.White)
                     spriteBatch.End()
 
-            member this.GetState() = new KinectCursorState(leftHand, (if leftHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), rightHand, (if rightHandColor = Color.White then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), centerHip)
+            member this.GetState() = new KinectCursorState(leftHand, (if not leftHandClick then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), rightHand, (if not rightHandClick then Microsoft.Xna.Framework.Input.ButtonState.Released else Microsoft.Xna.Framework.Input.ButtonState.Pressed), centerHip)
         
         
             member this.PoseStable (poseArray:KinectPoseState[])=
@@ -361,7 +391,7 @@
                 && fuzzyEquals leftShoulder.Y rightShoulder.Y disparity && fuzzyEquals leftShoulder.X rightShoulder.X disparity // left and right shoulder are straight
                 && fuzzyEquals leftHand.Y centerShoulder.Y disparity && fuzzyEquals leftHand.X centerShoulder.X disparity //left hand is level with shoulders
                 && fuzzyEquals centerShoulder.X centerHips.X disparity //back is straight
-                && not(fuzzyEquals centerShoulder.Y leftFoot.Y disparity)
+                && not(fuzzyEquals centerShoulder.Y leftFoot.Y 10)
                 //&& fuzzyEquals leftFoot.X rightFoot.X 10 && fuzzyEquals leftFoot.Y rightFoot.Y 10//feet are together
                 then
                     result <- true

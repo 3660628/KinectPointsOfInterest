@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline" xmlns:Framework="Microsoft.Xna.Framework" xmlns:Processors="Microsoft.Xna.Framework.Content.Pipeline.Processors">
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
   <Asset Type="Pipeline:BuildItemCollection">
     <Item>
       <Source>Sprite.png</Source>
@@ -9,6 +9,15 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\Sprite.xnb</Output>
       <Time>2011-12-30T11:14:33.2259642+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textbox.png</Source>
+      <Name>textbox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox.xnb</Output>
+      <Time>2012-02-12T12:42:58.8659068+00:00</Time>
     </Item>
     <Item>
       <Source>whiteHorizontalBar.png</Source>
@@ -29,31 +38,13 @@
       <Time>2012-01-08T14:19:36.7061716+00:00</Time>
     </Item>
     <Item>
-      <Source>click_1.mp3</Source>
-      <Name>click_1</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SoundEffectProcessor</Processor>
+      <Source>measurementsButton.png</Source>
+      <Name>measureButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\click_1.xnb</Output>
-      <Time>2012-01-02T17:15:15.4509141+00:00</Time>
-    </Item>
-    <Item>
-      <Source>Font.spritefont</Source>
-      <Name>Font</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\Font.xnb</Output>
-      <Time>2012-01-04T15:49:42.0943864+00:00</Time>
-    </Item>
-    <Item>
-      <Source>BEEP1A.WAV</Source>
-      <Name>BEEP1A</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BEEP1A.xnb</Output>
-      <Time>2012-01-31T18:01:00.107773+00:00</Time>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\measureButton.xnb</Output>
+      <Time>2012-02-01T14:11:36.574733+00:00</Time>
     </Item>
     <Item>
       <Source>shopButton.png</Source>
@@ -65,15 +56,6 @@
       <Time>2012-02-01T14:11:36.5757331+00:00</Time>
     </Item>
     <Item>
-      <Source>measurementsButton.png</Source>
-      <Name>measureButton</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\measureButton.xnb</Output>
-      <Time>2012-02-01T14:11:36.574733+00:00</Time>
-    </Item>
-    <Item>
       <Source>cursor.png</Source>
       <Name>cursor</Name>
       <Importer>TextureImporter</Importer>
@@ -81,24 +63,6 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\cursor.xnb</Output>
       <Time>2012-02-01T17:30:24.1516423+00:00</Time>
-    </Item>
-    <Item>
-      <Source>textbox.png</Source>
-      <Name>textbox</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textbox.xnb</Output>
-      <Time>2012-02-12T12:42:58.8659068+00:00</Time>
-    </Item>
-    <Item>
-      <Source>textBoxFont.spritefont</Source>
-      <Name>textBoxFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
-      <Time>2012-03-21T12:27:48.9938692+00:00</Time>
     </Item>
     <Item>
       <Source>nextButton.png</Source>
@@ -128,45 +92,6 @@
       <Time>2012-02-06T10:41:48.3656841+00:00</Time>
     </Item>
     <Item>
-      <Source>male.FBX</Source>
-      <Name>male</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\male.xnb</Output>
-      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
-      <Dependency>
-        <Key>obj\x86\Debug\male_0.xml</Key>
-        <Value>2012-02-15T09:12:00.2240973+00:00</Value>
-      </Dependency>
-      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Request>
-    </Item>
-    <Item>
-      <Source>male.FBX</Source>
-      <Importer>FbxImporter</Importer>
-      <Options>IntermediateFile, DontCacheImportedData</Options>
-      <Output>obj\x86\Debug\male_0.xml</Output>
-      <Time>2012-02-15T09:11:57.2859292+00:00</Time>
-    </Item>
-    <Item>
-      <Source>garmentItemFont.spritefont</Source>
-      <Name>garmentItemFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb</Output>
-      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
-    </Item>
-    <Item>
-      <Source>backButton.png</Source>
-      <Name>backButton</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\backButton.xnb</Output>
-      <Time>2012-02-12T10:41:15.9365755+00:00</Time>
-    </Item>
-    <Item>
       <Source>textbox_shaddow.png</Source>
       <Name>textbox_shaddow</Name>
       <Importer>TextureImporter</Importer>
@@ -183,6 +108,15 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentButton.xnb</Output>
       <Time>2012-02-12T10:41:40.7389941+00:00</Time>
+    </Item>
+    <Item>
+      <Source>backButton.png</Source>
+      <Name>backButton</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\backButton.xnb</Output>
+      <Time>2012-02-12T10:41:15.9365755+00:00</Time>
     </Item>
     <Item>
       <Source>GarmentThumbNotFound.png</Source>
@@ -219,43 +153,6 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\GarmentImageNotFound.xnb</Output>
       <Time>2012-02-13T11:50:30.3543919+00:00</Time>
-    </Item>
-    <Item>
-      <Source>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\makehuman\exports\texture.png</Source>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Parameters>
-        <Data Key="ColorKeyColor" Type="Framework:Color">FFFF00FF</Data>
-        <Data Key="ColorKeyEnabled" Type="bool">true</Data>
-        <Data Key="TextureFormat" Type="Processors:TextureProcessorOutputFormat">DxtCompressed</Data>
-        <Data Key="GenerateMipmaps" Type="bool">true</Data>
-        <Data Key="ResizeToPowerOfTwo" Type="bool">false</Data>
-        <Data Key="PremultiplyAlpha" Type="bool">true</Data>
-      </Parameters>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Output>
-      <Time>2012-01-30T17:52:18.8779455+00:00</Time>
-    </Item>
-    <Item>
-      <Source>malechub.FBX</Source>
-      <Name>malechub</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\malechub.xnb</Output>
-      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
-      <Dependency>
-        <Key>obj\x86\Debug\malechub_0.xml</Key>
-        <Value>2012-02-14T11:08:29.2722497+00:00</Value>
-      </Dependency>
-      <Request>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\texture_1.xnb</Request>
-    </Item>
-    <Item>
-      <Source>malechub.FBX</Source>
-      <Importer>FbxImporter</Importer>
-      <Options>IntermediateFile, DontCacheImportedData</Options>
-      <Output>obj\x86\Debug\malechub_0.xml</Output>
-      <Time>2012-02-14T11:08:25.5110346+00:00</Time>
     </Item>
     <Item>
       <Source>noUserImage.jpg</Source>
@@ -501,6 +398,69 @@
       <Time>2012-02-25T19:24:52.5370563+00:00</Time>
     </Item>
     <Item>
+      <Source>UI\HandRight70x81Animated.png</Source>
+      <Name>UI\HandRight70x81Animated</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\HandRight70x81Animated.xnb</Output>
+      <Time>2012-04-02T10:40:32.178942+01:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\BlueButton50x50.png</Source>
+      <Name>UI\BlueButton50x50</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\BlueButton50x50.xnb</Output>
+      <Time>2012-04-02T11:25:53.3200955+01:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\BlueButton100x100.png</Source>
+      <Name>UI\BlueButton100x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\BlueButton100x100.xnb</Output>
+      <Time>2012-04-02T12:35:46.7553346+01:00</Time>
+    </Item>
+    <Item>
+      <Source>click_1.mp3</Source>
+      <Name>click_1</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\click_1.xnb</Output>
+      <Time>2012-01-02T17:15:15.4509141+00:00</Time>
+    </Item>
+    <Item>
+      <Source>Font.spritefont</Source>
+      <Name>Font</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\Font.xnb</Output>
+      <Time>2012-01-04T15:49:42.0943864+00:00</Time>
+    </Item>
+    <Item>
+      <Source>textBoxFont.spritefont</Source>
+      <Name>textBoxFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
+      <Time>2012-04-03T11:13:42.4292382+01:00</Time>
+    </Item>
+    <Item>
+      <Source>garmentItemFont.spritefont</Source>
+      <Name>garmentItemFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\garmentItemFont.xnb</Output>
+      <Time>2012-02-10T16:26:09.7012094+00:00</Time>
+    </Item>
+    <Item>
       <Source>BigText.spritefont</Source>
       <Name>BigText</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -508,6 +468,15 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BigText.xnb</Output>
       <Time>2012-03-21T15:15:15.2841339+00:00</Time>
+    </Item>
+    <Item>
+      <Source>BEEP1A.WAV</Source>
+      <Name>BEEP1A</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BEEP1A.xnb</Output>
+      <Time>2012-01-31T18:01:00.107773+00:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -521,6 +490,10 @@
       <OutputDirectory>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\</OutputDirectory>
     </Settings>
     <Assemblies>
+      <Assembly>
+        <Key>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\bin\x86\Debug\SkinnedModelProcessor.dll</Key>
+        <Value>2012-04-03T11:22:03.5374398+01:00</Value>
+      </Assembly>
       <Assembly>
         <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.XImporter.dll</Key>
         <Value>2010-08-23T12:41:18+01:00</Value>

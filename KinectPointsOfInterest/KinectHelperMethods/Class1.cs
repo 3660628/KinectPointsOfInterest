@@ -19,9 +19,7 @@ namespace KinectHelperMethods
     //*****************************
     public static class KinectExtensions
     {
-        private static Texture2D texture = null;
-        private static Color[] colorData = null;
- 
+        
         public static Vector2 GetScreenPosition(this Joint joint, KinectSensor kinectRuntime, int screenWidth, int screenHeight)
         {
             //float depthX;
@@ -78,6 +76,7 @@ namespace KinectHelperMethods
                     //we are after. Print this out to the screen and call the
                     //InboundCharEvent so any events hooked up to this will be
                     //notifed that there is a char ready to be processed.
+                    System.Console.WriteLine(m.WParam);
                     char trueCharacter = (char)m.WParam;
                     Console.WriteLine(trueCharacter);
 

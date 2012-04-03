@@ -32,7 +32,7 @@
             //let login = new KinectTextInputScreen(this, null, changeScreenEvent, null, kinectUI)
             //do login.KinectUI <- kinectUI //pass the kinectUI object to the first screen
             //let login = new StoreScreen(this, changeScreenEvent)
-            //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent)
+            //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent, kinectUI)
 
             let loadNewScreen (args:ChangeScreenEventArgs)= 
                 args.OldScreen.DestroyScene()

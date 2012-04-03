@@ -26,7 +26,7 @@
 
             member this.LoadContent()=
                 //build and add all components that make up the instruction screen to the game components
-                background <- new Button(game, "UI/MeasurementInstructions/GrayBackground800x600", "none", new Vector2(112.0f, 84.0f), kinect)
+                background <- new Button(game, "UI/MeasurementInstructions/GrayBackground800x600", "none", new Vector2(112.0f, 84.0f), "", kinect)
                 do background.DrawOrder <- 10
                 do game.Components.Add(background)
                 instructionImage <- new Image(game, image_name, new Vector2(112.0f, 84.0f))
@@ -232,6 +232,7 @@
                     let (waist, hips, height) = processor.GetMeasurements
                     printfn "WAIST=%A \nHIPS=%A \nHEIGHT=%A" waist hips height
                     finished <- true
+                    event.Trigger(new ChangeScreenEventArgs(this, new VisualisationScreen(game, sex, height, 10, waist, hips, e, kinectUI)))
                 base.Update gameTime
 
             override this.DestroyScene()=
@@ -246,7 +247,7 @@
 
             let mutable nextButton = new TextButton(game, "nextButton", "no_shadow", "Next", new Vector2( 300.0f, 500.0f), base.KinectUI)
 
-            let model = new PersonModel(game, sex, height, chest, waist, hips)
+            let model = new Visualisation.HumanModel(game, "none", 0)
             
             let mutable leftClick = true //so click form last screen is not read through
 
@@ -259,17 +260,18 @@
                 base.LoadContent()
 
             override this.Update(gameTime)=
-                if Mouse.GetState().LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    this.ClickOption (new Vector2(float32(Mouse.GetState().X), float32( Mouse.GetState().Y)))
-                if Mouse.GetState().LeftButton = ButtonState.Released then
-                    leftClick <- false
-                base.Update(gameTime)
+                let key = Keyboard.GetState().GetPressedKeys()
+                if key.Length <> 0 then
+                    match key.[0] with
+                        | Keys.D1 -> model.ChangeFrame(10)
+                        | Keys.D2 -> model.ChangeFrame(20)
+                        | Keys.D3 -> model.ChangeFrame(30)
+                        | Keys.D4 -> model.ChangeFrame(40)
+                        | Keys.D5 -> model.ChangeFrame(50)
+                        | Keys.D6 -> model.ChangeFrame(59)
+                        | _ -> ()
 
-            member this.ClickOption(mouseClickPos:Vector2)=
-                match mouseClickPos with
-                    | x when base.InBounds(x, nextButton) -> event.Trigger(new ChangeScreenEventArgs(this, new GenderSelectScreen(this.Game, event, kinect))) //clicked on measure button
-                    | _ -> ()// clicked elsewhere, do nothing
+                base.Update(gameTime)
 
             override this.DestroyScene()=
                 this.Game.Components.Remove(model) |> ignore
@@ -279,8 +281,8 @@
         and MainMenu(game:Game, e:Event<ChangeScreenEventArgs>, kinect) as this=
             inherit Menu(game, kinect)
 
-            let mutable measureButton = new Button(game, "UI/MeasureButton300x300", "no_shadow", new Vector2(90.0f,150.0f), base.KinectUI)
-            let mutable shopButton = new Button(game, "UI/ShopButton300x300", "no_shadow", new Vector2(410.0f,150.0f), base.KinectUI)
+            let mutable measureButton = new Button(game, "UI/MeasureButton300x300", "no_shadow", new Vector2(90.0f,150.0f), "", base.KinectUI)
+            let mutable shopButton = new Button(game, "UI/ShopButton300x300", "no_shadow", new Vector2(410.0f,150.0f), "", base.KinectUI)
 
             let event = e
             
@@ -352,9 +354,9 @@
             let event = e
             let deselectTextBoxEvent = new Event<_>()
 
-            let mutable username = new TextBox(game, false, "UI/BlueButton600x150", "no", new Vector2(212.0f,159.0f), deselectTextBoxEvent)
+            let mutable username = new TextBox(game, false, "UI/BlueButton600x150", "no", new Vector2(212.0f,159.0f), deselectTextBoxEvent, kinect)
             do username.DrawOrder <- 1
-            let mutable password = new TextBox(game, true, "UI/BlueButton600x150", "no", new Vector2(212.0f,319.0f), deselectTextBoxEvent)
+            let mutable password = new TextBox(game, true, "UI/BlueButton600x150", "no", new Vector2(212.0f,319.0f), deselectTextBoxEvent, kinect)
             do password.DrawOrder <- 1
             let mutable nextButton = new TextButton(game, "UI/BlueButton300x150", "no", "Login", new Vector2( 512.0f, 479.0f), base.KinectUI)
             do nextButton.DrawOrder <- 1
@@ -362,9 +364,13 @@
             do backButton.DrawOrder <- 1
             let mutable errorBox:ErrorBox = null
             //Event Handlers
-            let deselectTextBoxHandler args=
-                username.Deselect
-                password.Deselect
+            let deselectTextBoxHandler sender args=
+                if args = "none" then
+                    username.Deselect
+                    password.Deselect
+                else if args = "kinect" then
+                    event.Trigger(new ChangeScreenEventArgs(this, new KinectTextInputScreen(game, sender, e, this, kinect))) // go back to previous screen
+                    
             let BackHandler args=
                 event.Trigger(new ChangeScreenEventArgs(this, new RecentUsersScreen(game, e, kinect))) // go back to previous screen
             let ErrorClickHandler args= 
@@ -393,7 +399,7 @@
             member this.DeselectTextBoxes = deselectTextBoxEvent.Publish
 
             override this.Initialize()=
-                this.DeselectTextBoxes.Add(fun args -> deselectTextBoxHandler args)
+                this.DeselectTextBoxes.Add(fun (sender,args) -> deselectTextBoxHandler sender args)
                 nextButton.Click.Add(fun args-> LoginHandler args)
                 backButton.Click.Add(fun args -> BackHandler args)
                 username.Text <- email
@@ -416,8 +422,8 @@
         and GenderSelectScreen(game:Game, e:Event<ChangeScreenEventArgs>, kinect) as this=
             inherit Menu(game, kinect)
 
-            let maleButton = new Button(game, "UI/MaleButton300x300", "no_shadow", new Vector2(90.0f,150.0f), base.KinectUI)
-            let femaleButton = new Button(game, "UI/FemaleButton300x300", "no_shadow", new Vector2(410.0f,150.0f), base.KinectUI)
+            let maleButton = new Button(game, "UI/MaleButton300x300", "no_shadow", new Vector2(90.0f,150.0f), "", base.KinectUI)
+            let femaleButton = new Button(game, "UI/FemaleButton300x300", "no_shadow", new Vector2(410.0f,150.0f), "", base.KinectUI)
             let event = e
 
             let genderSelectedHandler (args:ButtonClickedEventArgs)= 
@@ -521,29 +527,56 @@
         and KinectTextInputScreen(game:Game, textBox:TextBox, e:Event<ChangeScreenEventArgs>, prevScreen, kinect) as this=
             inherit Menu(game, kinect)
 
-            let charSets = ["abcdefgh";"ijklmnop";"qrstuvwxyz"] //!@£$%^&*(),.+=-/_\"\'\\|:;[]#
-            let mutable letterPointer = 0
-            let whichCharSet = 0
-            let ltrPosition = new Vector2(100.0f, 100.0f)
-            let label = new Label(game," ", ltrPosition, "BigText")
-            
+            let charSet = "1234567890qwertyuiopasdfghjklzxcvbnm" //!@£$%^&*(),.+=-/_\"\'\\|:;[]#
+            let charSetCaps = "!@£$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM"
+            let keys = Array.init 36 (fun x -> new TextButton(game, "UI/BlueButton100x100", "none", charSet.Substring(x, 1), new Vector2(12.0f+(match x with
+                                                                                                                                        | x when x >= 29 -> float32(x-29) * 100.0f
+                                                                                                                                        | x when x >= 20 -> float32(x-20) * 100.0f 
+                                                                                                                                        | x when x >= 10 -> float32(x-10) * 100.0f
+                                                                                                                                        | x when x >= 0 -> float32(x) * 100.0f), match x with
+                                                                                                                                                                                    | x when x >= 29 -> 550.0f
+                                                                                                                                                                                    | x when x >= 20 -> 450.0f 
+                                                                                                                                                                                    | x when x >= 10 -> 350.0f
+                                                                                                                                                                                    | x when x >= 0 -> 250.0f), kinect))
+            let capsButton = new TextButton(game, "UI/BlueButton100x100", "none", "Caps", new Vector2(100.0f,700.0f), kinect)
+            let okButton = new TextButton(game, "UI/BlueButton100x100", "none", "OK", new Vector2(900.0f,700.0f), kinect)
+            let backspaceButton = new TextButton(game, "UI/BlueButton100x100", "none", "<--", new Vector2(900.0f,50.0f), kinect)
+            let mutable caps = false
 
             override this.LoadContent()=
-                this.Game.Components.Add(label)
-                
                 base.LoadContent()
+                let prevTextBoxPos = textBox.Position
+                do textBox.Position <- (new Vector2(212.0f, 50.0f))
 
             override this.Initialize()=
-                //backButton.Click.Add(fun (args) -> backButtonClickHandler (args))
-                base.Initialize() 
+                
+                for x in keys do
+                    this.Game.Components.Add(x)
+                    x.DrawOrder <- 10 
+                    x.Click.Add(fun x -> textBox.AddChar x.Sender.Value)
+                this.Game.Components.Add(capsButton)
+                capsButton.DrawOrder <- 10 
+                capsButton.Click.Add(fun x -> caps <- not caps
+                                              for i = 0 to charSet.Length - 1 do
+                                                    keys.[i].ChangeText (if caps then charSetCaps.Substring(i,1) else charSet.Substring(i,1))
+                                              ) 
+                this.Game.Components.Add(okButton)
+                okButton.DrawOrder <- 10 
+                okButton.Click.Add(fun x -> ())
+                this.Game.Components.Add(backspaceButton)
+                backspaceButton.DrawOrder <- 10 
+                backspaceButton.Click.Add(fun x -> textBox.Backspace)  
+                this.Game.Components.Add(textBox)
+                textBox.DrawOrder <- 10 
+                base.Initialize()
                 
             override this.Update(gameTime)=
                 let leftHandX = kinect.GetState().LeftHandPosition.X
-                let centerHipX = kinect.GetState().CenterHipReference.X
-                let diff =  (int (centerHipX - leftHandX) / 128) - 1
-                letterPointer <- if diff > game.GraphicsDevice.Viewport.Width then 8 else if diff < 0 then 0 else int(diff)
-                label.ChangeText (charSets.[whichCharSet].Substring(letterPointer, 1))
+                ()
 
             override this.DestroyScene()=
-                this.Game.Components.Remove(label) |> ignore
+                for x in keys do
+                    this.Game.Components.Remove(x) |> ignore
+                this.Game.Components.Remove(capsButton) |> ignore
+                this.Game.Components.Remove(textBox) |> ignore
                 base.DestroyScene()

@@ -1,0 +1,7 @@
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\bin\x86\Debug\SkinnedModelProcessor.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\bin\x86\Debug\SkinnedModelProcessor.pdb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\bin\x86\Debug\KinectHelperMethods.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\bin\x86\Debug\KinectHelperMethods.pdb
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\obj\x86\Debug\SkinnedModelProcessor.dll
+C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\SkinnedModelProcessor\obj\x86\Debug\SkinnedModelProcessor.pdb
