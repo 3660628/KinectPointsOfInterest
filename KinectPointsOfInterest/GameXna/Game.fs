@@ -20,18 +20,30 @@
             let graphicsDeviceManager = new GraphicsDeviceManager(this)
 
             let screenWidth, screenHeight = 1024, 768
+            let mutable fullscreen = false
 
             let mutable spriteBatch : SpriteBatch = null
+
+            let mutable customer = null
 
             let kinectUI = new Kinect.KinectCursor(this)
             do kinectUI.DrawOrder <- 99
             
+            let fullscreenButton = new MenuItems.ToggleButton(this, "UI/FullScreenButton100x100", "UI/NotFullScreenButton100x100", new Vector2(10.0f, 658.0f), kinectUI)
+            do fullscreenButton.DrawOrder <- 98
+            let fullscreenHandler args = 
+                fullscreen <- not fullscreen
+                fullscreenButton.Toggle
+                graphicsDeviceManager.IsFullScreen <- fullscreen
+                graphicsDeviceManager.ApplyChanges()
+            do fullscreenButton.Click.Add(fullscreenHandler)
+            do fullscreenButton.KinectClick.Add(fullscreenHandler)
 
             let changeScreenEvent = new Event<ChangeScreenEventArgs>()
-            let login = new RecentUsersScreen(this, changeScreenEvent, kinectUI)
-            //let login = new KinectTextInputScreen(this, null, changeScreenEvent, null, kinectUI)
+            //let login = new RecentUsersScreen(this, changeScreenEvent, kinectUI)
+            //let login = new KinectTextInputScreen(this, new MenuItems.TextBox(this, false, "UI/BlueButton600x150", "", Vector2.Zero, kinectUI) , changeScreenEvent, new RecentUsersScreen(this, changeScreenEvent, kinectUI), kinectUI)
             //do login.KinectUI <- kinectUI //pass the kinectUI object to the first screen
-            //let login = new StoreScreen(this, changeScreenEvent)
+            let login = new StoreScreen(this, changeScreenEvent, "", kinectUI)
             //let login = new VisualisationScreen(this, "male", 0, 0, 0,0,changeScreenEvent, kinectUI)
 
             let loadNewScreen (args:ChangeScreenEventArgs)= 
@@ -55,6 +67,7 @@
 
                 this.Components.Add(login)
                 this.Components.Add(kinectUI)
+                this.Components.Add(fullscreenButton)
                 
                 base.Initialize()
 

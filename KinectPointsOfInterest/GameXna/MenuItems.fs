@@ -65,12 +65,16 @@ open Kinect
                 and set(pos) = position <- pos
             member this.Sprite
                 with get() = sprite
+            member this.SwapShadowAndSprite=
+                let temp = sprite
+                sprite <- shadow
+                shadow <- temp
             member this.SpriteBatch
                 with get() = spriteBatch
                 
                  
         [<AllowNullLiteral>] //allow null as a proper value
-        type Button(game, textureName, shadowName, pos:Vector2, value, kinect:KinectCursor)=
+        type Button(game, textureName, shadowName, pos:Vector2, kinect:KinectCursor)=
             inherit DrawableMenuItem(game, textureName, shadowName, pos)
 
             let mutable leftClick = true
@@ -79,9 +83,12 @@ open Kinect
             let mutable enabled = true
 
             let buttonClickedEvent = new Event<ButtonClickedEventArgs>()
+            let kinectButtonClickedEvent = new Event<ButtonClickedEventArgs>()
 
             [<CLIEvent>]
             member this.Click = buttonClickedEvent.Publish
+            [<CLIEvent>]
+            member this.KinectClick = kinectButtonClickedEvent.Publish
 
             member this.getBasePosition:Vector2 =
                 base.Position
@@ -94,11 +101,8 @@ open Kinect
                 enabled <- false
 
             override this.Initialize()=
-                //kinect.Click.Add(kinectClickHandler)
                 base.Initialize()
                 
-            member this.Value
-                with get() = value
 
             override this.Update(gameTime)=
                 if enabled then
@@ -116,7 +120,7 @@ open Kinect
                         && kinect.GetState().RightHandPosition.X > float32 base.Sprite.Bounds.Left  + (base.Position.X) then 
                             if kinect.GetState().RightHandPosition.Y < float32 base.Sprite.Bounds.Bottom  + (base.Position.Y)
                             && kinect.GetState().RightHandPosition.Y > float32 base.Sprite.Bounds.Top + (base.Position.Y) then 
-                                buttonClickedEvent.Trigger(new ButtonClickedEventArgs(this))
+                                kinectButtonClickedEvent.Trigger(new ButtonClickedEventArgs(this))
                                 
                     if Mouse.GetState().LeftButton = ButtonState.Released then
                         leftClick <- false
@@ -130,7 +134,7 @@ open Kinect
         
         [<AllowNullLiteral>] //allow null as a proper value
         type TextButton(game, textureName, shadowTextureName, label:string, pos:Vector2, kinect)=
-            inherit Button(game, textureName, shadowTextureName, pos, label, kinect)
+            inherit Button(game, textureName, shadowTextureName, pos, kinect)
 
             let mutable font:SpriteFont = null
             let mutable label = label
@@ -150,12 +154,37 @@ open Kinect
                base.SpriteBatch.Begin()
                base.SpriteBatch.DrawString(font, label, base.Position + spriteCenter, Color.White, 0.0f, textPosOffset, 1.0f, SpriteEffects.None, 0.5f)
                base.SpriteBatch.End()
+
             member this.ChangeText t=
                 label <- t
 
+            member this.Label
+                with get() = label
+
+        [<AllowNullLiteral>] //allow null as a proper value
+        type TextToggleButton(game, textureName, toggledTextureName, label:string, pos:Vector2, kinect)=
+            inherit TextButton(game, textureName, toggledTextureName, label, pos, kinect)
+
+            let mutable toggled = false
+
+            member this.Toggle = 
+                toggled <- not toggled
+                base.SwapShadowAndSprite
+
+        [<AllowNullLiteral>] //allow null as a proper value
+        type ToggleButton(game, textureName, toggledTextureName, pos:Vector2, kinect)=
+            inherit Button(game, textureName, toggledTextureName, pos, kinect)
+
+            let mutable toggled = false
+
+            member this.Toggle = 
+                toggled <- not toggled
+                base.SwapShadowAndSprite
+
+
         [<AllowNullLiteral>] //allow null as a proper value
         type ErrorBox(game, heading:string, message:string, kinect)=
-            inherit Button(game, "UI/Error800x600", "no_shadow", new Vector2(112.0f , 84.0f) , "", kinect)
+            inherit Button(game, "UI/Error800x600", "no_shadow", new Vector2(112.0f , 84.0f) , kinect)
 
             let mutable font:SpriteFont = null
             let messageLines = message.Split('\n')
@@ -189,11 +218,13 @@ open Kinect
                 base.Update(gameTime)
 
         [<AllowNullLiteral>] //allow null as a proper value
-        type TextBox(game, passwordBox, textureName, shadowTextureName, pos:Vector2, event, kinect:KinectCursor)=
-            inherit DrawableMenuItem(game, textureName, shadowTextureName, pos)
+        type TextBox(game, passwordBox, textureName, shadowTextureName, pos:Vector2, kinect:KinectCursor)=
+            inherit Button(game, textureName, shadowTextureName, pos, kinect)
             
-            let MAXCHARS = 35
+            let createdTime = System.DateTime.Now.ToString()
 
+            let MAXCHARS = 35
+            let mutable security = passwordBox //should the input be obscured?
             let mutable selected = false
             let mutable text = ""
 
@@ -205,8 +236,6 @@ open Kinect
 
             let mutable font:SpriteFont = null
 
-            let deselectEvent:Event<_> = event
-
             let mutable textCenterY = 0.0f
             let mutable spriteCenterY = 0.0f
             let mutable textPosOffset = new Vector2(20.0f, 20.0f)
@@ -217,6 +246,9 @@ open Kinect
                     mask <- mask + "*"
                 mask
             
+            member this.CreatedTime 
+                with get() = createdTime
+
             member this.Backspace=
                 if text.Length > 0 then
                     carrotPosition <- System.Math.Max(carrotPosition - 1, 0)
@@ -224,7 +256,9 @@ open Kinect
 
             member this.Deselect =
                 selected <- false
-            
+            member this.Select =
+                selected <- true
+
             member this.AddChar char=
                 if text.Length < MAXCHARS then
                     (text <- text.Substring(0,carrotPosition) + char + text.Substring(carrotPosition, text.Length - carrotPosition))
@@ -235,7 +269,6 @@ open Kinect
                                                                             if selected then 
                                                                                 if x <> '\b' then //not the backspace key
                                                                                     this.AddChar (x.ToString())
-                                                                                        //System.Diagnostics.Debug.WriteLine(x)
                                                                                 else if x <> '\n' then //is the backspace key
                                                                                     this.Backspace
                                                                                 )
@@ -249,25 +282,7 @@ open Kinect
                 textPosOffset.Y <- spriteCenterY - textCenterY
                 
             override this.Update(gameTime)=
-                let mouse = Mouse.GetState()
-                if mouse.LeftButton = ButtonState.Pressed && not leftClick then
-                    leftClick <- true
-                    if mouse.X < int base.Position.X + base.Sprite.Bounds.Right && mouse.X > int base.Position.X + base.Sprite.Bounds.Left
-                    && mouse.Y > int base.Position.Y + base.Sprite.Bounds.Top && mouse.Y < int base.Position.Y + base.Sprite.Bounds.Bottom then
-                            deselectEvent.Trigger(this,"none")
-                            selected <- true
-                if mouse.LeftButton = ButtonState.Released then
-                    leftClick <- false
-                if kinect.GetState().RightButton = ButtonState.Pressed && not kinectRightClick && not (kinect.GetState().LeftButton = ButtonState.Pressed) then
-                        kinectRightClick <- true
-                        if kinect.GetState().RightHandPosition.X < float32 base.Sprite.Bounds.Right + (base.Position.X) 
-                        && kinect.GetState().RightHandPosition.X > float32 base.Sprite.Bounds.Left  + (base.Position.X) then 
-                            if kinect.GetState().RightHandPosition.Y < float32 base.Sprite.Bounds.Bottom  + (base.Position.Y)
-                            && kinect.GetState().RightHandPosition.Y > float32 base.Sprite.Bounds.Top + (base.Position.Y) then 
-                                deselectEvent.Trigger(this, "kinect")
-                                selected <- true
-                if kinect.GetState().RightButton = ButtonState.Released then
-                    kinectRightClick <- false
+                base.Update(gameTime)
                 textMask <- maskText text
 
             override this.Draw(gameTime)=
@@ -293,7 +308,9 @@ open Kinect
                 and set(t) = text <- t
                              carrotPosition <- String.length text
                              textMask <- maskText text
-
+            member this.Security
+                with set(s) = security <- s
+                and get() = security
 
         [<AllowNullLiteral>] //allow null as a proper value
         type Label(game, l:string, pos:Vector2, fontName)=
@@ -329,7 +346,7 @@ open Kinect
 
         [<AllowNullLiteral>] //allow null as a proper value
         type GarmentItem(game:Game, garment:Store.Garment, pos, kinect)=
-            inherit Button(game, "UI/BlueButton400x100", "none", pos, "", kinect)
+            inherit Button(game, "UI/BlueButton400x100", "none", pos, kinect)
 
             let mutable leftClick = true
 
@@ -503,7 +520,7 @@ open Kinect
         //A drawable button for easy access to previous users.
         //When clicked they should         
         type User(game, id:int, name:string, email, pos, kinect) as this=
-            inherit Button(game, "UI/BlueButton600x150", "none", pos, "", kinect)
+            inherit Button(game, "UI/BlueButton600x150", "none", pos, kinect)
 
             let mutable leftClick = true
             let mutable kinectRightClick = true
@@ -516,12 +533,12 @@ open Kinect
 
             let buttonClickedEvent = new Event<LoginEventArgs>()
             
-            let kinectClickHandler (args: System.Windows.Forms.MouseEventArgs) =
-                if args.X < (this.getBaseSprite.Bounds.Right + (int this.getBasePosition.X)) 
-                && args.X > (this.getBaseSprite.Bounds.Left  + (int this.getBasePosition.X)) then 
-                    if args.Y < (this.getBaseSprite.Bounds.Bottom  + (int this.getBasePosition.Y))
-                    && args.Y > (this.getBaseSprite.Bounds.Top + (int this.getBasePosition.Y)) then 
-                        buttonClickedEvent.Trigger(new LoginEventArgs(this, email))
+//            let kinectClickHandler (args: System.Windows.Forms.MouseEventArgs) =
+//                if args.X < (this.getBaseSprite.Bounds.Right + (int this.getBasePosition.X)) 
+//                && args.X > (this.getBaseSprite.Bounds.Left  + (int this.getBasePosition.X)) then 
+//                    if args.Y < (this.getBaseSprite.Bounds.Bottom  + (int this.getBasePosition.Y))
+//                    && args.Y > (this.getBaseSprite.Bounds.Top + (int this.getBasePosition.Y)) then 
+//                        buttonClickedEvent.Trigger(new LoginEventArgs(this, email))
 
             [<CLIEvent>]
             member this.Click = buttonClickedEvent.Publish

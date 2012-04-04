@@ -449,7 +449,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\textBoxFont.xnb</Output>
-      <Time>2012-04-03T11:13:42.4292382+01:00</Time>
+      <Time>2012-04-04T11:49:33.8944757+01:00</Time>
     </Item>
     <Item>
       <Source>garmentItemFont.spritefont</Source>
@@ -477,6 +477,33 @@
       <Options>None</Options>
       <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\BEEP1A.xnb</Output>
       <Time>2012-01-31T18:01:00.107773+00:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\RedButton100x100.png</Source>
+      <Name>UI\RedButton100x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\RedButton100x100.xnb</Output>
+      <Time>2012-04-04T12:18:15.7180591+01:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\FullScreenButton100x100.png</Source>
+      <Name>UI\FullScreenButton100x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\FullScreenButton100x100.xnb</Output>
+      <Time>2012-04-04T13:44:21.4070569+01:00</Time>
+    </Item>
+    <Item>
+      <Source>UI\NotFullScreenButton100x100.png</Source>
+      <Name>UI\NotFullScreenButton100x100</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Ewen\Documents\Visual Studio 2010\Projects\KinectPointsOfInterest\KinectPointsOfInterest\GameXna\bin\Debug\XnaGameContent\UI\NotFullScreenButton100x100.xnb</Output>
+      <Time>2012-04-04T13:44:22.2770581+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

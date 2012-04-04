@@ -51,4 +51,7 @@ XnaGameContent\textBoxFont.xnb
 XnaGameContent\garmentItemFont.xnb
 XnaGameContent\BigText.xnb
 XnaGameContent\BEEP1A.xnb
+XnaGameContent\UI\RedButton100x100.xnb
+XnaGameContent\UI\FullScreenButton100x100.xnb
+XnaGameContent\UI\NotFullScreenButton100x100.xnb
 XnaGameContent\measurementsButton.png

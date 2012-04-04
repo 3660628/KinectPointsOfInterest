@@ -57,14 +57,14 @@ open System
                     | ex-> (MessageBox.Show(ex.Message ) |> ignore
                             null)
 
-            member this.getGarments customer=
+            member this.getGarments customer whereClause=
                 try
                     if connection.State = Data.ConnectionState.Closed then
                         connection.Open()
                     //get garments
                     let mutable garments:List<Store.Garment> = List.Empty
                     let transactionGarments = connection.BeginTransaction()
-                    let SelectGarmentsInAvailableSizes = "SELECT * FROM garments NATURAL JOIN stock AS inStock JOIN size_charts ON size_chart = size_charts.id AND inStock.size = size_charts.size"
+                    let SelectGarmentsInAvailableSizes = "SELECT * FROM garments NATURAL JOIN stock AS inStock JOIN size_charts ON size_chart = size_charts.id AND inStock.size = size_charts.size " + whereClause
                     let cmd = new MySqlCommand(SelectGarmentsInAvailableSizes, connection,transactionGarments)
                     cmd.CommandTimeout <- 20
                     let rdr = cmd.ExecuteReader()
